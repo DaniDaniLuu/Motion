@@ -39,7 +39,7 @@ const formSchema = z
     path: ["confirmPassword"],
   });
 
-const LoginForm = () => {
+const RegisterForm = () => {
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -138,4 +138,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default RegisterForm;

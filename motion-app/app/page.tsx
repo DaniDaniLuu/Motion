@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import {
   PageHeader,
@@ -8,15 +7,18 @@ import {
   PageHeaderDescriptionSmall,
 } from "@/components/page-header";
 import { Icons } from "@/components/icons";
-import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import User from "@/components/User";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
-import { Session } from "inspector";
+import { redirect } from "next/navigation";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
+
+  if (session?.user) {
+    redirect("/dashboard/homepage");
+  }
   return (
     <div>
       <PageHeader>
@@ -31,7 +33,7 @@ export default async function Home() {
           logging into multiple accounts.
         </PageHeaderDescription>
         <PageActions>
-          <Link href="/login" className={buttonVariants()}>
+          <Link href="/auth/login" className={buttonVariants()}>
             Get Started
           </Link>
           <Link

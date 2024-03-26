@@ -1,5 +1,5 @@
-"use client";
-import LoginForm from "@/components/forms/LoginForm";
+"use client"
+import RegisterForm from "@/components/forms/RegisterForm";
 import {
   Card,
   CardContent,
@@ -8,19 +8,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import GoogleSignInButton from "@/components/GoogleSignInButton";
+import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
+import GoogleSignInButton from "@/components/GoogleSignInButton";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-const LoginPage = () => {
+const RegisterPage = async () => {
   return (
     <div className="sm:min-w-96 lg:min-w-[500px]">
       <CardHeader>
         <div className="text-6xl font-bold leading-none tracking-tight">
-          Login
+          Register
         </div>
       </CardHeader>
       <CardContent>
-        <LoginForm></LoginForm>
+        <RegisterForm></RegisterForm>
       </CardContent>
       <CardFooter className="flex flex-col items-center">
         <div
@@ -29,11 +33,13 @@ const LoginPage = () => {
         >
           or
         </div>
-        <GoogleSignInButton>Login with Google</GoogleSignInButton>
-        <div className="flex justify-center gap-1 mt-2">
-          Not Registered yet?
-          <Link className="text-primary hover:underline" href="/register">
-            Create an account
+        <div className="flex justify-center gap-1">
+          <GoogleSignInButton>Continue with Google</GoogleSignInButton>
+          <Link
+            className={buttonVariants({ variant: "destructive" })}
+            href="/auth/login"
+          >
+            Head Back
           </Link>
         </div>
       </CardFooter>
@@ -41,4 +47,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;

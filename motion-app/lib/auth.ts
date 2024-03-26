@@ -1,9 +1,8 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { db } from "./db";
-import { COOKIE_NAME_PRERENDER_BYPASS } from "next/dist/server/api-utils";
-import { compare } from "bcrypt";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(db),
@@ -12,13 +11,14 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   pages: {
-    signIn: "/login",
+    signIn: "/auth/login",
+    error: "/auth/error",
   },
   providers: [
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "text", placeholder: "jsmith" },
+        email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
@@ -33,14 +33,16 @@ export const authOptions: NextAuthOptions = {
         if (!existingUser) {
           return null;
         }
+        if (existingUser.password) {
+          const bcrypt = require("bcrypt");
+          const passwordMatch = await bcrypt.compare(
+            credentials?.password,
+            existingUser.password
+          );
 
-        const passwordMatch = await compare(
-          credentials?.password,
-          existingUser.password
-        );
-
-        if (!passwordMatch) {
-          return null;
+          if (!passwordMatch) {
+            return null;
+          }
         }
 
         return {
@@ -50,7 +52,19 @@ export const authOptions: NextAuthOptions = {
         };
       },
     }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    }),
   ],
+  events: {
+    async linkAccount({ user }) {
+      await db.user.update({
+        where: { id: user.id },
+        data: { emailVerified: new Date() },
+      });
+    },
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {

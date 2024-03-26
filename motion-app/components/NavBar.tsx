@@ -3,7 +3,6 @@ import React from "react";
 import { Button, buttonVariants } from "./ui/button";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { signOut } from "next-auth/react";
 import UserAccountNav from "./UserAccountNav";
 
 const NavBar = async () => {
@@ -19,7 +18,7 @@ const NavBar = async () => {
           {session?.user ? (
             <UserAccountNav></UserAccountNav>
           ) : (
-            <Link className={buttonVariants()} href="/login">
+            <Link className={buttonVariants()} href="/auth/login">
               Sign In
             </Link>
           )}
