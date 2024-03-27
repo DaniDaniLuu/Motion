@@ -1,9 +1,11 @@
 import Link from "next/link";
 import React from "react";
-import { Button, buttonVariants } from "./ui/button";
+import { Button, buttonVariants } from "../ui/button";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import UserAccountNav from "./UserAccountNav";
+import UserAccountNav from "../UserAccountNav";
+import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
+import ProfileNav from "./profileNav";
 
 const NavBar = async () => {
   const session = await getServerSession(authOptions);
@@ -16,7 +18,9 @@ const NavBar = async () => {
 
         <div>
           {session?.user ? (
-            <UserAccountNav></UserAccountNav>
+            <div className="flex items-center gap-5">
+              <ProfileNav></ProfileNav>
+            </div>
           ) : (
             <Link className={buttonVariants()} href="/auth/login">
               Sign In

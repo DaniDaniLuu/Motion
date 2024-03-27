@@ -65,7 +65,7 @@ const RegisterForm = () => {
     });
 
     if (response.ok) {
-      router.push("/login");
+      router.push("/auth/login");
     } else {
       toast({
         variant: "destructive",

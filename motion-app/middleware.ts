@@ -8,9 +8,9 @@ export async function middleware(req: NextRequest) {
   const session = await getToken({ req, secret });
   const { pathname } = req.nextUrl;
 
-  if (!session && pathname === "/dashboard/homepage") {
-    return NextResponse.redirect(new URL("/auth/login", req.url));
-  }
+  // if (!session && pathname === "/dashboard/homepage") {
+  //   return NextResponse.redirect(new URL("/auth/login", req.url));
+  // }
 
   if (
     session &&
