@@ -24,9 +24,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Provider>
-          <main className="flex min-h-screen flex-col items-center justify-between p-24">
+          <main className="flex relative min-h-screen w-full flex-col items-center justify-between">
             <NavBar />
-            {children}
+            <div className="flex-grow min-h-0 w-full">{children}</div>
           </main>
           <Toaster />
         </Provider>

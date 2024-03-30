@@ -10,7 +10,7 @@ import ProfileNav from "./profileNav";
 const NavBar = async () => {
   const session = await getServerSession(authOptions);
   return (
-    <div className="py-2 border-b border-s-zinc-200 fixed w-full z-10 top-0">
+    <div className="py-2 border-b border-s-zinc-200 relative w-full">
       <div className="container flex items-center justify-between">
         <Link href="/">
           <div className="text-center text-2xl font-extrabold">Motion</div>

@@ -1,11 +1,17 @@
-import { authOptions } from "@/lib/auth";
-import { getServerSession } from "next-auth";
-import React from "react";
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
+import { Home, SquareUserRound, Landmark } from "lucide-react";
+import SideNavBar from "./components/sideNavBar";
 
 const HomePage = async () => {
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex w-full"></div>
+    <div className="flex p-10">
+      <SideNavBar></SideNavBar>
     </div>
   );
 };
