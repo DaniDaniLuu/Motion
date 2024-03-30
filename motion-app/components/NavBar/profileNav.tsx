@@ -14,6 +14,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { signOut } from "next-auth/react";
 import ClientDropdownMenuItem from "./ClientDropdownitem";
+import DropdownPageNavigate from "../utils/DropdownPageNavigate";
 
 const ProfileNav = async () => {
   const session = await getServerSession(authOptions);
@@ -62,10 +63,10 @@ const ProfileNav = async () => {
             Profile // Needs implementation
             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownPageNavigate pagePath="/dashboard/settings">
             Settings // Needs implementation
             <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-          </DropdownMenuItem>
+          </DropdownPageNavigate>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <ClientDropdownMenuItem>
