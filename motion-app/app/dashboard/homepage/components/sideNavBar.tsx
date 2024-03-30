@@ -15,7 +15,14 @@ import {
   LucideIcon,
 } from "lucide-react";
 import AccountTab from "./navBarTab";
-import { Key, ReactNode, useState } from "react";
+import { Key, ReactNode, useCallback, useState } from "react";
+import {
+  useTellerConnect,
+  TellerConnectOnSuccess,
+  TellerConnectOnEvent,
+  TellerConnectOnExit,
+  TellerConnectOptions,
+} from "teller-connect-react";
 
 const SideNavBar = () => {
   const [selected, setSelected] = useState(1);
@@ -39,6 +46,36 @@ const SideNavBar = () => {
       content: "Transaction List",
     },
   ];
+
+  const applicationId = "app_ot3k8hmnk53vro77aq000";
+  const onSuccess = useCallback<TellerConnectOnSuccess>((authorization) => {
+    // send public_token to your server
+    // https://teller.io/docs/api/tokens/#token-exchange-flow
+    const accessToken = authorization.accessToken;
+    fetch("https://api.teller.io/accounts", {
+      method: "GET",
+      headers: {
+        Authorization: "Basic " + btoa("test_token_ky6igyqi3qxa4"),
+      },
+    })
+      .then((response) => console.log(response))
+      .catch();
+  }, []);
+  const onEvent = useCallback<TellerConnectOnEvent>((name, data) => {
+    console.log(name, data);
+  }, []);
+  const onExit = useCallback<TellerConnectOnExit>(() => {
+    console.log("TellerConnect was dismissed by user");
+  }, []);
+
+  const config: TellerConnectOptions = {
+    applicationId,
+    onSuccess,
+    onEvent,
+    onExit,
+  };
+
+  const { open, ready } = useTellerConnect(config);
 
   return (
     <div className="flex flex-col max-w-72">
@@ -78,7 +115,11 @@ const SideNavBar = () => {
         </TooltipProvider>
       </div>
       <div className="py-4">
-        <Button variant="ghost" className="flex items-center gap-3">
+        <Button
+          onClick={() => open()}
+          variant="ghost"
+          className="flex items-center gap-3"
+        >
           <CirclePlus />
           <p>Add Account</p>
         </Button>
