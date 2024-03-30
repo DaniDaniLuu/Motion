@@ -59,12 +59,12 @@ const ProfileNav = async () => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            Profile // Needs implementation
+          <DropdownPageNavigate pagePath="/profile/">
+            Profile
             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownPageNavigate pagePath="/dashboard/settings">
-            Settings // Needs implementation
+          </DropdownPageNavigate>
+          <DropdownPageNavigate pagePath="/settings/">
+            Settings
             <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
           </DropdownPageNavigate>
         </DropdownMenuGroup>
