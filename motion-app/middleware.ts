@@ -10,7 +10,10 @@ export async function middleware(req: NextRequest) {
 
   if (
     !session &&
-    (pathname === "/dashboard/homepage" || pathname === "/dashboard")
+    (pathname === "/dashboard/homepage" ||
+      pathname === "/dashboard" ||
+      pathname === "/profile" ||
+      pathname === "/settings")
   ) {
     return NextResponse.redirect(new URL("/auth/login", req.url));
   }
