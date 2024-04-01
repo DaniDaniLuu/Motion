@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Pencil } from "lucide-react";
 
 // Define props type
@@ -22,13 +22,18 @@ const EditProfilePicture: React.FC<CustomAvatarProps> = ({
         console.log("Hi");
       }}
     >
-      {customImageSource !== "default" ? (
+      {customImageSource !== "default" && (
         <AvatarImage src={customImageSource} alt="profileImage" />
-      ) : (
-        <AvatarImage src={sessionImage || ""} alt="profileImage" />
+      )}
+      {customImageSource === "default" && (
+        <AvatarImage
+          src={sessionImage ? sessionImage : ""}
+          alt="profileImage"
+        />
       )}
 
-      {/* Position the Pencil component absolutely in the center */}
+      {/* Position the Pencil component absolutely in the center and make it visible on group hover */}
+      <Pencil className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100" />
     </Avatar>
   );
 };
