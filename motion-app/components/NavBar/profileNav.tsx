@@ -15,33 +15,33 @@ import { authOptions } from "@/lib/auth";
 import { signOut } from "next-auth/react";
 import ClientDropdownMenuItem from "./ClientDropdownitem";
 import DropdownPageNavigate from "../utils/DropdownPageNavigate";
+import { db } from "@/lib/db";
 
 const ProfileNav = async () => {
   const session = await getServerSession(authOptions);
-  let sessionImage, sessionName, sessionEmail;
+  let userObject, userImage, userName, sessionEmail;
+
   if (session?.user) {
-    let sessionUser = session.user;
-    if (sessionUser.image) {
-      sessionImage = sessionUser.image;
-    }
-    if (sessionUser.email) {
-      sessionEmail = sessionUser.email;
-    }
-    if (sessionUser.username) {
-      sessionName = sessionUser.username;
-    } else if (sessionUser.name) {
-      sessionName = sessionUser.name;
+    sessionEmail = session.user.email;
+    if (sessionEmail) {
+      userObject = await db.user.findUnique({ where: { email: sessionEmail } });
+      if (userObject) {
+        userImage = userObject.image;
+        if (userObject.name) {
+          userName = userObject.name;
+        } else {
+          userName = userObject.username;
+        }
+      }
     }
   }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage
-              src={sessionImage ? sessionImage : ""}
-              alt="profileImage"
-            />
+            <AvatarImage src={userImage ? userImage : ""} alt="profileImage" />
             <AvatarFallback>P</AvatarFallback>
           </Avatar>
         </Button>
@@ -50,7 +50,7 @@ const ProfileNav = async () => {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">
-              {sessionName ? sessionName : ""}
+              {userName ? userName : ""}
             </p>
             <p className="text-xs leading-none text-muted-foreground">
               {sessionEmail ? sessionEmail : ""}
