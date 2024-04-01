@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Pencil } from "lucide-react";
 
 // Define props type
@@ -16,8 +16,7 @@ const EditProfilePicture: React.FC<CustomAvatarProps> = ({
 }) => {
   return (
     <Avatar
-      style={{ width: "120px", height: "120px" }}
-      className="group h-15 w-15 rounded-full outline cursor-pointer relative hover:filter hover:brightness-75"
+      className="group h-[120px] w-[120px] rounded-full outline cursor-pointer relative hover:filter hover:brightness-75"
       onClick={() => {
         console.log("Hi");
       }}

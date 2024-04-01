@@ -17,7 +17,7 @@ import {
 import AccountTab from "./navBarTab";
 import { ReactNode, useCallback, useState, useEffect } from "react";
 import { usePlaidLink } from "react-plaid-link";
-import { useRouter } from "next/navigation";
+import { db } from "@/lib/db";
 
 const SideNavBar = () => {
   const [selected, setSelected] = useState(1);
@@ -45,7 +45,7 @@ const SideNavBar = () => {
     });
 
     const { access_token, item_id, error } = await response.json();
-    console.log(access_token);
+
     setAccessToken(access_token);
   }, []);
 
@@ -75,34 +75,21 @@ const SideNavBar = () => {
     },
   ];
 
-  const simpleCall = async () => {
-    const response = await fetch("/api/transactions", {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify({ access_token: accessToken }),
-    });
-    const data = await response.json();
-    console.log(data);
-  };
-
   return (
     <div className="flex flex-col max-w-72">
       <div className="border-b border-primary-foreground pb-4">
         <TooltipProvider>
           {buttonList.map(
             (button: {
-              id: any;
+              id: number;
               title: string;
               icon: ReactNode;
               content: string;
             }) => {
               return (
-                <Tooltip>
+                <Tooltip key={button.id}>
                   <TooltipTrigger asChild className="gap-2 min-w-72">
                     <Button
-                      key={button.id}
                       className={`flex justify-start ${
                         button.id === selected ? "bg-secondary" : ""
                       }`}
@@ -133,14 +120,6 @@ const SideNavBar = () => {
         >
           <CirclePlus />
           <p>Add Account</p>
-        </Button>
-        <Button
-          onClick={() => simpleCall()}
-          variant="ghost"
-          className="flex items-center gap-3"
-        >
-          <CirclePlus />
-          <p>Test API Call</p>
         </Button>
       </div>
 
