@@ -21,6 +21,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/api/create-link-token/route.js", "app/api/transactions/route.ts", "app/api/exchange-public-token/route.js"],
   "exclude": ["node_modules"]
 }

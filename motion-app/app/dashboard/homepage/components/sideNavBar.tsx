@@ -15,17 +15,45 @@ import {
   LucideIcon,
 } from "lucide-react";
 import AccountTab from "./navBarTab";
-import { Key, ReactNode, useCallback, useState } from "react";
-import {
-  useTellerConnect,
-  TellerConnectOnSuccess,
-  TellerConnectOnEvent,
-  TellerConnectOnExit,
-  TellerConnectOptions,
-} from "teller-connect-react";
+import { ReactNode, useCallback, useState, useEffect } from "react";
+import { usePlaidLink } from "react-plaid-link";
+import { useRouter } from "next/navigation";
 
 const SideNavBar = () => {
   const [selected, setSelected] = useState(1);
+  const [token, setToken] = useState(null);
+  const [accessToken, setAccessToken] = useState(null);
+
+  useEffect(() => {
+    const createLinkToken = async () => {
+      const response = await fetch("/api/create-link-token", {
+        method: "POST",
+      });
+      const { link_token } = await response.json();
+      setToken(link_token);
+    };
+    createLinkToken();
+  }, []);
+
+  const onSuccess = useCallback(async (publicToken: string) => {
+    const response = await fetch("/api/exchange-public-token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ public_token: publicToken }),
+    });
+
+    const { access_token, item_id, error } = await response.json();
+    console.log(access_token);
+    setAccessToken(access_token);
+  }, []);
+
+  const { open, ready } = usePlaidLink({
+    token,
+    onSuccess,
+  });
+
   const buttonList = [
     {
       id: 1,
@@ -47,35 +75,17 @@ const SideNavBar = () => {
     },
   ];
 
-  const applicationId = "app_ot3k8hmnk53vro77aq000";
-  const onSuccess = useCallback<TellerConnectOnSuccess>((authorization) => {
-    // send public_token to your server
-    // https://teller.io/docs/api/tokens/#token-exchange-flow
-    const accessToken = authorization.accessToken;
-    fetch("https://api.teller.io/accounts", {
-      method: "GET",
+  const simpleCall = async () => {
+    const response = await fetch("/api/transactions", {
+      method: "POST",
       headers: {
-        Authorization: "Basic " + btoa("test_token_ky6igyqi3qxa4"),
+        "Content-type": "application/json",
       },
-    })
-      .then((response) => console.log(response))
-      .catch();
-  }, []);
-  const onEvent = useCallback<TellerConnectOnEvent>((name, data) => {
-    console.log(name, data);
-  }, []);
-  const onExit = useCallback<TellerConnectOnExit>(() => {
-    console.log("TellerConnect was dismissed by user");
-  }, []);
-
-  const config: TellerConnectOptions = {
-    applicationId,
-    onSuccess,
-    onEvent,
-    onExit,
+      body: JSON.stringify({ access_token: accessToken }),
+    });
+    const data = await response.json();
+    console.log(data);
   };
-
-  const { open, ready } = useTellerConnect(config);
 
   return (
     <div className="flex flex-col max-w-72">
@@ -119,9 +129,18 @@ const SideNavBar = () => {
           onClick={() => open()}
           variant="ghost"
           className="flex items-center gap-3"
+          disabled={!ready}
         >
           <CirclePlus />
           <p>Add Account</p>
+        </Button>
+        <Button
+          onClick={() => simpleCall()}
+          variant="ghost"
+          className="flex items-center gap-3"
+        >
+          <CirclePlus />
+          <p>Test API Call</p>
         </Button>
       </div>
 
