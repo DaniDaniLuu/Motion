@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Pencil } from "lucide-react";
 import {
   Dialog,
@@ -86,7 +86,7 @@ const EditProfilePicture: React.FC<CustomAvatarProps> = ({
             alt="profileImage"
           />
         )}
-
+        <AvatarFallback>P</AvatarFallback>
         {/* Position the Pencil component absolutely in the center and make it visible on group hover */}
         <Pencil className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100" />
       </Avatar>

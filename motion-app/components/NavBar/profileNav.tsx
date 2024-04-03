@@ -33,15 +33,25 @@ const ProfileNav = async () => {
       sessionName = sessionUser.name;
     }
   }
+
+  let customImageSource = "default";
+  if (sessionImage?.substring(0, 5) !== "https") {
+    customImageSource = `/custom-user-images/${sessionEmail}.png?${Date.now()}`;
+  }
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage
-              src={sessionImage ? sessionImage : ""}
-              alt="profileImage"
-            />
+            {customImageSource !== "default" && (
+              <AvatarImage src={customImageSource} alt="profileImage" />
+            )}
+            {customImageSource === "default" && (
+              <AvatarImage
+                src={sessionImage ? sessionImage : ""}
+                alt="profileImage"
+              />
+            )}
             <AvatarFallback>P</AvatarFallback>
           </Avatar>
         </Button>
