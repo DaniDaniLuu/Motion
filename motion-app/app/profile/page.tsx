@@ -63,7 +63,7 @@ const ProfilePage = async () => {
           <header className="space-y-2">
             <div className="flex items-center space-x-3">
               <EditProfilePicture
-                customImageSource={customImageSource}
+                sessionEmail={sessionEmail}
                 sessionImage={sessionImage}
               ></EditProfilePicture>
               <div className="space-y-1">

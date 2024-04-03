@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Pencil } from "lucide-react";
 import {
@@ -18,15 +18,21 @@ import { ChangeEvent } from "react";
 
 // Define props type
 interface CustomAvatarProps {
-  customImageSource: string;
   sessionImage?: string; // sessionImage is optional
+  sessionEmail?: string;
 }
 
 // Define the component with TypeScript, using the props type
 const EditProfilePicture: React.FC<CustomAvatarProps> = ({
-  customImageSource,
   sessionImage,
+  sessionEmail,
 }) => {
+  const [key, setKey] = useState(0);
+  const refreshImageUrl = () => {
+    // Increment the key value to force re-render
+    setKey((prevKey) => prevKey + 1);
+  };
+
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     console.log(file);
@@ -43,6 +49,9 @@ const EditProfilePicture: React.FC<CustomAvatarProps> = ({
 
         if (response.ok) {
           console.log("File uploaded successfully");
+          const objectURL = URL.createObjectURL(file);
+          refreshImageUrl();
+
           // Optionally, you can perform additional actions after successful upload
         } else {
           console.error("Failed to upload file:", response.statusText);
@@ -54,6 +63,10 @@ const EditProfilePicture: React.FC<CustomAvatarProps> = ({
       }
     }
   };
+  let customImageSource = "default";
+  if (sessionImage?.substring(0, 5) !== "https") {
+    customImageSource = `/custom-user-images/${sessionEmail}.png?${Date.now()}`;
+  }
 
   return (
     <label htmlFor="avatar-upload">
@@ -65,7 +78,7 @@ const EditProfilePicture: React.FC<CustomAvatarProps> = ({
         }}
       >
         {customImageSource !== "default" && (
-          <AvatarImage src={customImageSource} alt="profileImage" />
+          <AvatarImage key={key} src={customImageSource} alt="profileImage" />
         )}
         {customImageSource === "default" && (
           <AvatarImage
