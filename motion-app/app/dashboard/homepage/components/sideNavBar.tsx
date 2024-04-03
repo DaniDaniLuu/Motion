@@ -12,12 +12,10 @@ import {
   SquareUserRound,
   Landmark,
   CirclePlus,
-  LucideIcon,
 } from "lucide-react";
 import AccountTab from "./navBarTab";
 import { ReactNode, useCallback, useState, useEffect } from "react";
 import { usePlaidLink } from "react-plaid-link";
-import { db } from "@/lib/db";
 
 const SideNavBar = () => {
   const [selected, setSelected] = useState(1);
@@ -45,7 +43,7 @@ const SideNavBar = () => {
     });
 
     const { access_token, item_id, error } = await response.json();
-
+    
     setAccessToken(access_token);
   }, []);
 
@@ -123,7 +121,7 @@ const SideNavBar = () => {
         </Button>
       </div>
 
-      <ScrollArea className="flex-grow max-h-[600px] rounded-md border p-4">
+      <ScrollArea className="flex-grow max-h-[calc(100vh-350px)] rounded-md border p-4">
         <AccountTab></AccountTab>
         <AccountTab></AccountTab>
         <AccountTab></AccountTab>
