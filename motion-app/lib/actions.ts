@@ -84,10 +84,9 @@ export async function addAccountInfo(access_token: string) {
   const transactionObject = await transactionResponse.json();
   const { added, modified, removed } = transactionObject;
 
-  console.log(`Added: \n\n ${added}`)
+  console.log(`Added: \n\n ${added}`);
 
   // accounts [] , name , logo , added, modified, removed
-  
 
   for (const account of accounts) {
     await db.bankAccount.create({
@@ -100,11 +99,20 @@ export async function addAccountInfo(access_token: string) {
         accessToken: access_token,
       },
     });
-
-    
   }
 
-
+  for (const transaction of added) {
+    await db.transactions.create({
+      data: {
+        transactionId: transaction.transaction_id,
+        amount: transaction.amount,
+        category: transaction.category,
+        merchantName: transaction.merchant_name,
+        date: transaction.date,
+        accountId: transaction.account_id,
+      },
+    });
+  }
 }
 
 export async function getUser() {

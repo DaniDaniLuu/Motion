@@ -76,7 +76,7 @@ model PlaidItem {
   accessToken String        @unique
   accounts    BankAccount[]
 
-  userEmail String 
+  userEmail String
   user      User   @relation(fields: [userEmail], references: [email], onDelete: Cascade)
 }
 
