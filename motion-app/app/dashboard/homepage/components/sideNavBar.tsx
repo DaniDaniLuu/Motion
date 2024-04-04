@@ -23,6 +23,7 @@ import {
   TellerConnectOnExit,
   TellerConnectOptions,
 } from "teller-connect-react";
+import RefreshButton from "../../components/refreshBankAccounts";
 
 const SideNavBar = () => {
   const [selected, setSelected] = useState(1);
@@ -114,15 +115,19 @@ const SideNavBar = () => {
           )}
         </TooltipProvider>
       </div>
-      <div className="py-4">
-        <Button
-          onClick={() => open()}
-          variant="ghost"
-          className="flex items-center gap-3"
-        >
-          <CirclePlus />
-          <p>Add Account</p>
-        </Button>
+
+      <div className="flex flex-col py-1">
+        <div>
+          <Button
+            onClick={() => open()}
+            variant="ghost"
+            className="flex items-center gap-3"
+          >
+            <CirclePlus />
+            <p>Add Account</p>
+          </Button>
+        </div>
+        <RefreshButton></RefreshButton>
       </div>
 
       <ScrollArea className="flex-grow max-h-[600px] rounded-md border p-4">
