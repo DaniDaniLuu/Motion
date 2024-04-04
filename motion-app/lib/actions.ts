@@ -84,9 +84,9 @@ export async function addAccountInfo(access_token: string) {
   const transactionObject = await transactionResponse.json();
   const { added, modified, removed } = transactionObject;
 
-  console.log(`Added: \n\n ${added}`);
-
   // accounts [] , name , logo , added, modified, removed
+
+  console.log(accounts);
 
   for (const account of accounts) {
     await db.bankAccount.create({
@@ -124,5 +124,43 @@ export async function getUser() {
     return NextResponse.json({ existingUser: user });
   } else {
     return NextResponse.json({ error: "No user found" });
+  }
+}
+
+/*
+
+
+
+
+for EACH plaidItem -> for EACH bankAccount -> 
+{
+    icon:
+    bankName:
+    balance:
+    accountType:
+}
+
+return this object in an array
+*/
+
+export async function getInfoAccountTab() {
+  interface accountInfo {
+    icon?: string;
+    bankName: string;
+    balance: number;
+    accountType: string;
+  }
+
+  const userResponse = await getUser();
+  const { existingUser } = await userResponse.json();
+  if (existingUser) {
+    const plaidItemArr = await db.plaidItem.findMany({
+      where: { userEmail: existingUser.email },
+    });
+
+    let bankAccount = []
+    for (const plaidItem of plaidItemArr){
+        const bankAccountArr = db.plaidItem.
+    }
   }
 }
