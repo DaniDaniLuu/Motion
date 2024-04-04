@@ -11,7 +11,12 @@ import { Home, SquareUserRound, Landmark, CirclePlus } from "lucide-react";
 import AccountTab from "./accountTab";
 import { ReactNode, useCallback, useState, useEffect } from "react";
 import { usePlaidLink } from "react-plaid-link";
-import { addAccountInfo, addToDB } from "@/lib/actions";
+import {
+  addAccountInfo,
+  addToDB,
+  getInfoAccountTab,
+  updateTransactions,
+} from "@/lib/actions";
 
 interface AccountInfo {
   bankName: string;
@@ -59,10 +64,10 @@ const SideNavBar = () => {
     });
 
     const { access_token, item_id, error } = await response.json();
+    console.log(access_token, item_id, error);
     await addToDB({ plaidAccessToken: access_token });
 
-    await addAccountInfo(access_token)
-
+    await addAccountInfo(access_token);
   }, []);
 
   const { open, ready } = usePlaidLink({
@@ -138,6 +143,7 @@ const SideNavBar = () => {
           <p>Add Account</p>
         </Button>
       </div>
+      <Button onClick={() => updateTransactions()}>Test</Button>
 
       <ScrollArea className="flex-grow max-h-[calc(100vh-350px)] rounded-md border p-4">
         {accounts.map((accountTab) => {
