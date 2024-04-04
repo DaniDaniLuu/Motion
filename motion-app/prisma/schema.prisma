@@ -49,21 +49,6 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model User {
-  id            String         @id @default(cuid())
-  username      String?        @unique
-  password      String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  name          String?
-  email         String?        @unique
-  emailVerified DateTime?
-  image         String?
-  PlaidAccount  PlaidAccount[]
-  accounts      Account[]
-  sessions      Session[]
-}
-
 model VerificationToken {
   identifier String
   token      String   @unique
@@ -72,9 +57,48 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model PlaidAccount {
-  accessToken String @unique
+model User {
+  id            String      @id @default(cuid())
+  username      String?     @unique
+  password      String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  name          String?
+  email         String?     @unique
+  emailVerified DateTime?
+  image         String?
+  PlaidItem     PlaidItem[]
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model PlaidItem {
+  accessToken String        @unique
+  accounts    BankAccount[]
 
   userEmail String 
   user      User   @relation(fields: [userEmail], references: [email], onDelete: Cascade)
+}
+
+model BankAccount {
+  accountId   String         @unique
+  balance     Int
+  icon        String?
+  accountType String
+  bankName    String
+  transaction Transactions[]
+
+  accessToken  String
+  plaidAccount PlaidItem @relation(fields: [accessToken], references: [accessToken], onDelete: Cascade)
+}
+
+model Transactions {
+  transactionId String   @unique
+  amount        Int
+  category      String[]
+  merchantName  String
+  date          String
+
+  accountId   String
+  bankAccount BankAccount @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
 }

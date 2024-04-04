@@ -7,24 +7,40 @@ import {
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Home,
-  SquareUserRound,
-  Landmark,
-  CirclePlus,
-} from "lucide-react";
-import AccountTab from "./navBarTab";
+import { Home, SquareUserRound, Landmark, CirclePlus } from "lucide-react";
+import AccountTab from "./accountTab";
 import { ReactNode, useCallback, useState, useEffect } from "react";
 import { usePlaidLink } from "react-plaid-link";
+import { addAccountInfo, addToDB } from "@/lib/actions";
+
+interface AccountInfo {
+  bankName: string;
+  bankImage: string;
+  miscInfo: string;
+  balance: number;
+}
 
 const SideNavBar = () => {
-  const [selected, setSelected] = useState(1);
+  const [selected, setSelected] = useState<number>(1);
+  const [accounts, setAccounts] = useState<AccountInfo[]>([]);
   const [token, setToken] = useState(null);
-  const [accessToken, setAccessToken] = useState(null);
+
+  const addAccountTab = (
+    bank: string,
+    image: string,
+    misc: string,
+    bal: number
+  ) => {
+    const newAccountList = [
+      ...accounts,
+      { bankName: bank, bankImage: image, miscInfo: misc, balance: bal },
+    ];
+    setAccounts(newAccountList);
+  };
 
   useEffect(() => {
     const createLinkToken = async () => {
-      const response = await fetch("/api/create-link-token", {
+      const response = await fetch("/api/plaid/create-link-token", {
         method: "POST",
       });
       const { link_token } = await response.json();
@@ -34,7 +50,7 @@ const SideNavBar = () => {
   }, []);
 
   const onSuccess = useCallback(async (publicToken: string) => {
-    const response = await fetch("/api/exchange-public-token", {
+    const response = await fetch("/api/plaid/exchange-public-token", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -43,8 +59,10 @@ const SideNavBar = () => {
     });
 
     const { access_token, item_id, error } = await response.json();
-    
-    setAccessToken(access_token);
+    await addToDB({ plaidAccessToken: access_token });
+
+    await addAccountInfo(access_token)
+
   }, []);
 
   const { open, ready } = usePlaidLink({
@@ -122,22 +140,16 @@ const SideNavBar = () => {
       </div>
 
       <ScrollArea className="flex-grow max-h-[calc(100vh-350px)] rounded-md border p-4">
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
+        {accounts.map((accountTab) => {
+          return (
+            <AccountTab
+              bankName={accountTab.bankName}
+              bankImage={accountTab.bankImage}
+              miscInfo={accountTab.miscInfo}
+              balance={accountTab.balance}
+            ></AccountTab>
+          );
+        })}
       </ScrollArea>
     </div>
   );

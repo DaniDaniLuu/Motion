@@ -32,5 +32,9 @@ export async function POST(req: NextRequest) {
     // Update cursor to the next cursor
     cursor = data.next_cursor;
   }
-  return NextResponse.json({ added: added, modified: modified, removed: removed });
+  return NextResponse.json({
+    added: added,
+    modified: modified,
+    removed: removed,
+  });
 }
