@@ -107,7 +107,7 @@ export async function addAccountInfo(access_token: string) {
         transactionId: transaction.transaction_id,
         amount: transaction.amount,
         category: transaction.category,
-        merchantName: transaction.merchant_name,
+        merchantName: transaction.merchantName ? transaction.merchantName : "",
         date: transaction.date,
         accountId: transaction.account_id,
       },
