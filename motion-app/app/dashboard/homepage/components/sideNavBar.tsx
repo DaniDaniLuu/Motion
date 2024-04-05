@@ -7,6 +7,19 @@ import {
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Home, SquareUserRound, Landmark, CirclePlus } from "lucide-react";
+import AccountTab from "./accountTab";
+import { ReactNode, useCallback, useState, useEffect } from "react";
+import { usePlaidLink } from "react-plaid-link";
+import {
+
+  addAccountInfo,
+  addToDB,
+  getInfoAccountTab,
+  updateTransactions,
+} from "@/lib/actions";
+
+
 import {
   Home,
   SquareUserRound,
@@ -25,8 +38,63 @@ import {
 } from "teller-connect-react";
 import RefreshButton from "../../components/refreshBankAccounts";
 
+interface AccountInfo {
+  bankName: string;
+  bankImage: string;
+  miscInfo: string;
+  balance: number;
+}
+
 const SideNavBar = () => {
-  const [selected, setSelected] = useState(1);
+  const [selected, setSelected] = useState<number>(1);
+  const [accounts, setAccounts] = useState<AccountInfo[]>([]);
+  const [token, setToken] = useState(null);
+
+  const addAccountTab = (
+    bank: string,
+    image: string,
+    misc: string,
+    bal: number
+  ) => {
+    const newAccountList = [
+      ...accounts,
+      { bankName: bank, bankImage: image, miscInfo: misc, balance: bal },
+    ];
+    setAccounts(newAccountList);
+  };
+
+  useEffect(() => {
+    const createLinkToken = async () => {
+      const response = await fetch("/api/plaid/create-link-token", {
+        method: "POST",
+      });
+      const { link_token } = await response.json();
+      setToken(link_token);
+    };
+    createLinkToken();
+  }, []);
+
+  const onSuccess = useCallback(async (publicToken: string) => {
+    const response = await fetch("/api/plaid/exchange-public-token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ public_token: publicToken }),
+    });
+
+    const { access_token, item_id, error } = await response.json();
+    console.log(access_token, item_id, error);
+    await addToDB({ plaidAccessToken: access_token });
+
+    await addAccountInfo(access_token);
+  }, []);
+
+  const { open, ready } = usePlaidLink({
+    token,
+    onSuccess,
+  });
+
   const buttonList = [
     {
       id: 1,
@@ -48,52 +116,21 @@ const SideNavBar = () => {
     },
   ];
 
-  const applicationId = "app_ot3k8hmnk53vro77aq000";
-  const onSuccess = useCallback<TellerConnectOnSuccess>((authorization) => {
-    // send public_token to your server
-    // https://teller.io/docs/api/tokens/#token-exchange-flow
-    const accessToken = authorization.accessToken;
-    fetch("https://api.teller.io/accounts", {
-      method: "GET",
-      headers: {
-        Authorization: "Basic " + btoa("test_token_ky6igyqi3qxa4"),
-      },
-    })
-      .then((response) => console.log(response))
-      .catch();
-  }, []);
-  const onEvent = useCallback<TellerConnectOnEvent>((name, data) => {
-    console.log(name, data);
-  }, []);
-  const onExit = useCallback<TellerConnectOnExit>(() => {
-    console.log("TellerConnect was dismissed by user");
-  }, []);
-
-  const config: TellerConnectOptions = {
-    applicationId,
-    onSuccess,
-    onEvent,
-    onExit,
-  };
-
-  const { open, ready } = useTellerConnect(config);
-
   return (
     <div className="flex flex-col max-w-72">
       <div className="border-b border-primary-foreground pb-4">
         <TooltipProvider>
           {buttonList.map(
             (button: {
-              id: any;
+              id: number;
               title: string;
               icon: ReactNode;
               content: string;
             }) => {
               return (
-                <Tooltip>
+                <Tooltip key={button.id}>
                   <TooltipTrigger asChild className="gap-2 min-w-72">
                     <Button
-                      key={button.id}
                       className={`flex justify-start ${
                         button.id === selected ? "bg-secondary" : ""
                       }`}
@@ -115,8 +152,7 @@ const SideNavBar = () => {
           )}
         </TooltipProvider>
       </div>
-
-      <div className="flex flex-col py-1">
+<div className="flex flex-col py-1">
         <div>
           <Button
             onClick={() => open()}
@@ -129,24 +165,19 @@ const SideNavBar = () => {
         </div>
         <RefreshButton></RefreshButton>
       </div>
+      <Button onClick={() => updateTransactions()}>Test</Button>
 
-      <ScrollArea className="flex-grow max-h-[600px] rounded-md border p-4">
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
-        <AccountTab></AccountTab>
+      <ScrollArea className="flex-grow max-h-[calc(100vh-350px)] rounded-md border p-4">
+        {accounts.map((accountTab) => {
+          return (
+            <AccountTab
+              bankName={accountTab.bankName}
+              bankImage={accountTab.bankImage}
+              miscInfo={accountTab.miscInfo}
+              balance={accountTab.balance}
+            ></AccountTab>
+          );
+        })}
       </ScrollArea>
     </div>
   );
