@@ -162,7 +162,7 @@ const SideNavBar = () => {
             <p>Add Account</p>
           </Button>
         </div>
-        <RefreshButton></RefreshButton>
+        <RefreshButton disabled={!ready}></RefreshButton>
       </div>
 
       <ScrollArea className="flex-grow max-h-[calc(100vh-350px)] rounded-md border p-4">

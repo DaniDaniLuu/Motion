@@ -151,7 +151,7 @@ export async function addAccountInfo(access_token: string) {
 export async function updateTransactions(access_token_array: Array<string>) {
   const response = await getUser();
   const { existingUser } = await response.json();
-  if (!access_token_array) {
+  if (access_token_array.length == 0) {
     console.log("No access tokens provided");
     access_token_array = [];
     if (existingUser) {
@@ -173,6 +173,9 @@ export async function updateTransactions(access_token_array: Array<string>) {
     const bankAccountArr = await db.bankAccount.findMany({
       where: { accessToken: access_token },
     });
+    if (bankAccountArr.length == 0) {
+      return "No bank accounts added yet.";
+    }
     for (const bankAccount of bankAccountArr) {
       const transactions = await db.transactions.findMany({
         where: { accountId: bankAccount.accountId },
@@ -260,9 +263,9 @@ export async function updateTransactions(access_token_array: Array<string>) {
           }
         }
 
-        console.log("Transactions updated successfully!");
+        return "Added new transactions!";
       } else {
-        console.log("No new transactions found!");
+        return "No new transactions found!";
       }
     }
   }
