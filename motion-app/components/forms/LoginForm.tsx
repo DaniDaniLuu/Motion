@@ -55,7 +55,7 @@ const LoginForm = () => {
         description: "Oops! Something went wrong!",
       });
     } else {
-      router.push("/dashboard/homepage");
+      router.push("/overview");
       router.refresh();
     }
   }

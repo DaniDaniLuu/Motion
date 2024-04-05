@@ -11,11 +11,8 @@ import {
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { redirect } from "next/navigation";
 
-const RegisterPage = async () => {
+const RegisterPage = () => {
   return (
     <div className="sm:min-w-96 lg:min-w-[500px]">
       <CardHeader>

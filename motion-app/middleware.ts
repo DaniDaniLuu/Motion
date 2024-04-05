@@ -8,12 +8,9 @@ export async function middleware(req: NextRequest) {
   const session = await getToken({ req, secret });
   const { pathname } = req.nextUrl;
 
-  
-
   if (
     !session &&
-    (pathname === "/dashboard/homepage" ||
-      pathname === "/dashboard" ||
+    (pathname === "/overview" ||
       pathname === "/profile" ||
       pathname === "/settings")
   ) {
@@ -24,7 +21,7 @@ export async function middleware(req: NextRequest) {
     session &&
     (pathname === "/auth/login" || pathname === "/auth/register")
   ) {
-    return NextResponse.redirect(new URL("/dashboard/homepage", req.url));
+    return NextResponse.redirect(new URL("/overview", req.url));
   }
 
   return NextResponse.next();
