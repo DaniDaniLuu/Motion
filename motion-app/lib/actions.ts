@@ -116,6 +116,7 @@ export async function addAccountInfo(access_token: string) {
           console.log(
             "Updated existing bank account id's and related transactions!"
           );
+          updateTransactions([access_token]);
         } else {
           await db.bankAccount.create({
             data: {
@@ -129,6 +130,7 @@ export async function addAccountInfo(access_token: string) {
             },
           });
           console.log("Bank account created successfully!");
+          updateTransactions([access_token]);
         }
       }
 
@@ -143,7 +145,6 @@ export async function addAccountInfo(access_token: string) {
         console.error("Error creating bank account:", error);
       }
     }
-    updateTransactions([access_token]);
   }
 }
 
@@ -235,9 +236,17 @@ export async function updateTransactions(access_token_array: Array<string>) {
           next_cursor = data.next_cursor;
         }
       }
+      const accountRelevantAccessToken = bankAccount.accessToken;
+      console.log(accountRelevantAccessToken);
+      console.log(access_token);
+      console.log(bankAccount.accountId);
       if (added && added.length > 0 && next_cursor) {
+        added = added.filter((transaction) => {
+          return transaction.account_id === bankAccount.accountId;
+        });
         for (const transaction of added) {
           if (transaction.merchant_name) {
+            console.log(transaction.transaction_id);
             await db.transactions.create({
               data: {
                 transactionId: transaction.transaction_id,
@@ -250,7 +259,7 @@ export async function updateTransactions(access_token_array: Array<string>) {
             });
           }
         }
-        console.log(added);
+
         console.log("Transactions updated successfully!");
       } else {
         console.log("No new transactions found!");
