@@ -15,7 +15,10 @@ import {
   addToDB,
   getInfoAccountTab,
   updateTransactions,
+  fetchStoredBankInfo,
 } from "@/lib/actions";
+import { useToast } from "@/components/ui/use-toast";
+import AccountTab from "./accountTab";
 
 import RefreshButton from "../../components/refreshBankAccounts";
 
@@ -25,24 +28,28 @@ interface AccountInfo {
   miscInfo: string;
   balance: number;
 }
+interface BankAccountInfo {
+  accountId: string;
+  balance: number;
+  accountType: string;
+  bankName: string;
+  persistentAccountId?: string;
+  accessToken: string;
+  icon: string | null;
+}
 
 const SideNavBar = () => {
   const [selected, setSelected] = useState<number>(1);
-  const [accounts, setAccounts] = useState<AccountInfo[]>([]);
   const [token, setToken] = useState(null);
+  const [currentBankAccounts, setCurrentBankAccounts] = useState<
+    BankAccountInfo[]
+  >([]);
+  let bankAccountInfo: Array<BankAccountInfo> = [];
 
-  const addAccountTab = (
-    bank: string,
-    image: string,
-    misc: string,
-    bal: number
-  ) => {
-    const newAccountList = [
-      ...accounts,
-      { bankName: bank, bankImage: image, miscInfo: misc, balance: bal },
-    ];
-    setAccounts(newAccountList);
-  };
+  function updateAccounts(fetchedBankInfo: BankAccountInfo[]) {
+    bankAccountInfo = fetchedBankInfo;
+    setCurrentBankAccounts(fetchedBankInfo);
+  }
 
   useEffect(() => {
     const createLinkToken = async () => {
@@ -52,8 +59,19 @@ const SideNavBar = () => {
       const { link_token } = await response.json();
       setToken(link_token);
     };
+    const fetchedBankInfo = async () => {
+      const fetchedBankInfo = await fetchStoredBankInfo();
+      if (fetchedBankInfo) {
+        setCurrentBankAccounts(fetchedBankInfo);
+      }
+    };
     createLinkToken();
+    fetchedBankInfo();
   }, []);
+
+  useEffect(() => {
+    setCurrentBankAccounts(currentBankAccounts);
+  }, [currentBankAccounts]);
 
   const onSuccess = useCallback(async (publicToken: string) => {
     const response = await fetch("/api/plaid/exchange-public-token", {
@@ -69,6 +87,10 @@ const SideNavBar = () => {
     await addToDB({ plaidAccessToken: access_token });
 
     await addAccountInfo(access_token);
+    const fetchedBankInfo = await fetchStoredBankInfo();
+    if (fetchedBankInfo) {
+      updateAccounts(fetchedBankInfo);
+    }
   }, []);
 
   const { open, ready } = usePlaidLink({
@@ -138,7 +160,8 @@ const SideNavBar = () => {
           <Button
             onClick={() => open()}
             variant="ghost"
-            className="flex items-center gap-3"
+            className="flex items-center gap-3 "
+            disabled={!ready}
           >
             <CirclePlus />
             <p>Add Account</p>
@@ -147,7 +170,21 @@ const SideNavBar = () => {
         <RefreshButton></RefreshButton>
       </div>
 
-      <ScrollArea className="flex-grow max-h-[calc(100vh-350px)] rounded-md border p-4"></ScrollArea>
+      <ScrollArea className="flex-grow max-h-[calc(100vh-350px)] rounded-md border p-4">
+        <div className="flex flex-col gap-4">
+          {bankAccountInfo.map((account: BankAccountInfo) => {
+            return (
+              <AccountTab
+                key={account.bankName}
+                bankName={account.bankName}
+                bankImage={account.icon ? account.icon : ""}
+                miscInfo={account.accountType}
+                balance={account.balance}
+              ></AccountTab>
+            );
+          })}
+        </div>
+      </ScrollArea>
     </div>
   );
 };

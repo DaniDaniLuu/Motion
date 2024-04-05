@@ -320,3 +320,22 @@ export async function getInfoAccountTab() {
     }
   }
 }
+
+export async function fetchStoredBankInfo() {
+  const response = await getUser();
+  const { existingUser } = await response.json();
+  if (existingUser) {
+    //Finding plaid items with matching emails
+    const plaidItemArr = await db.plaidItem.findMany({
+      where: { userEmail: existingUser.email },
+    });
+    let bankAccount = [];
+    for (const plaidItem of plaidItemArr) {
+      const bankAccountArr = await db.bankAccount.findMany({
+        where: { accessToken: plaidItem.accessToken },
+      });
+      bankAccount.push(bankAccountArr);
+    }
+    return bankAccount.flat();
+  }
+}
