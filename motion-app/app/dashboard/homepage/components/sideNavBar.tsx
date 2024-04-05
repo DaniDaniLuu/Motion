@@ -46,11 +46,6 @@ const SideNavBar = () => {
   >([]);
   let bankAccountInfo: Array<BankAccountInfo> = [];
 
-  function updateAccounts(fetchedBankInfo: BankAccountInfo[]) {
-    bankAccountInfo = fetchedBankInfo;
-    setCurrentBankAccounts(fetchedBankInfo);
-  }
-
   useEffect(() => {
     const createLinkToken = async () => {
       const response = await fetch("/api/plaid/create-link-token", {
@@ -62,7 +57,7 @@ const SideNavBar = () => {
     const fetchedBankInfo = async () => {
       const fetchedBankInfo = await fetchStoredBankInfo();
       if (fetchedBankInfo) {
-        setCurrentBankAccounts(fetchedBankInfo);
+        setCurrentBankAccounts([...fetchedBankInfo]);
       }
     };
     createLinkToken();
@@ -89,7 +84,7 @@ const SideNavBar = () => {
     await addAccountInfo(access_token);
     const fetchedBankInfo = await fetchStoredBankInfo();
     if (fetchedBankInfo) {
-      updateAccounts(fetchedBankInfo);
+      setCurrentBankAccounts([...fetchedBankInfo]);
     }
   }, []);
 
@@ -172,7 +167,7 @@ const SideNavBar = () => {
 
       <ScrollArea className="flex-grow max-h-[calc(100vh-350px)] rounded-md border p-4">
         <div className="flex flex-col gap-4">
-          {bankAccountInfo.map((account: BankAccountInfo) => {
+          {currentBankAccounts.map((account: BankAccountInfo) => {
             return (
               <AccountTab
                 key={account.bankName}
