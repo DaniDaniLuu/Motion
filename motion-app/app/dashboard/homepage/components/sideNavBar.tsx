@@ -12,11 +12,31 @@ import AccountTab from "./accountTab";
 import { ReactNode, useCallback, useState, useEffect } from "react";
 import { usePlaidLink } from "react-plaid-link";
 import {
+
   addAccountInfo,
   addToDB,
   getInfoAccountTab,
   updateTransactions,
 } from "@/lib/actions";
+
+
+import {
+  Home,
+  SquareUserRound,
+  Landmark,
+  CirclePlus,
+  LucideIcon,
+} from "lucide-react";
+import AccountTab from "./navBarTab";
+import { Key, ReactNode, useCallback, useState } from "react";
+import {
+  useTellerConnect,
+  TellerConnectOnSuccess,
+  TellerConnectOnEvent,
+  TellerConnectOnExit,
+  TellerConnectOptions,
+} from "teller-connect-react";
+import RefreshButton from "../../components/refreshBankAccounts";
 
 interface AccountInfo {
   bankName: string;
@@ -132,16 +152,18 @@ const SideNavBar = () => {
           )}
         </TooltipProvider>
       </div>
-      <div className="py-4">
-        <Button
-          onClick={() => open()}
-          variant="ghost"
-          className="flex items-center gap-3"
-          disabled={!ready}
-        >
-          <CirclePlus />
-          <p>Add Account</p>
-        </Button>
+<div className="flex flex-col py-1">
+        <div>
+          <Button
+            onClick={() => open()}
+            variant="ghost"
+            className="flex items-center gap-3"
+          >
+            <CirclePlus />
+            <p>Add Account</p>
+          </Button>
+        </div>
+        <RefreshButton></RefreshButton>
       </div>
       <Button onClick={() => updateTransactions()}>Test</Button>
 
