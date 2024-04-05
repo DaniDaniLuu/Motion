@@ -47,6 +47,11 @@ export default async function Home() {
           </Link>
         </PageActions>
       </PageHeader>
+
+      <h2>Client Session</h2>
+      <User></User>
+      <h2>Server Session</h2>
+      {JSON.stringify(session)}
     </div>
   );
 }
