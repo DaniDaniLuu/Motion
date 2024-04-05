@@ -8,34 +8,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Home, SquareUserRound, Landmark, CirclePlus } from "lucide-react";
-import AccountTab from "./accountTab";
 import { ReactNode, useCallback, useState, useEffect } from "react";
 import { usePlaidLink } from "react-plaid-link";
 import {
-
   addAccountInfo,
   addToDB,
   getInfoAccountTab,
   updateTransactions,
 } from "@/lib/actions";
 
-
-import {
-  Home,
-  SquareUserRound,
-  Landmark,
-  CirclePlus,
-  LucideIcon,
-} from "lucide-react";
-import AccountTab from "./navBarTab";
-import { Key, ReactNode, useCallback, useState } from "react";
-import {
-  useTellerConnect,
-  TellerConnectOnSuccess,
-  TellerConnectOnEvent,
-  TellerConnectOnExit,
-  TellerConnectOptions,
-} from "teller-connect-react";
 import RefreshButton from "../../components/refreshBankAccounts";
 
 interface AccountInfo {
@@ -152,7 +133,7 @@ const SideNavBar = () => {
           )}
         </TooltipProvider>
       </div>
-<div className="flex flex-col py-1">
+      <div className="flex flex-col py-1">
         <div>
           <Button
             onClick={() => open()}
@@ -165,20 +146,8 @@ const SideNavBar = () => {
         </div>
         <RefreshButton></RefreshButton>
       </div>
-      <Button onClick={() => updateTransactions()}>Test</Button>
 
-      <ScrollArea className="flex-grow max-h-[calc(100vh-350px)] rounded-md border p-4">
-        {accounts.map((accountTab) => {
-          return (
-            <AccountTab
-              bankName={accountTab.bankName}
-              bankImage={accountTab.bankImage}
-              miscInfo={accountTab.miscInfo}
-              balance={accountTab.balance}
-            ></AccountTab>
-          );
-        })}
-      </ScrollArea>
+      <ScrollArea className="flex-grow max-h-[calc(100vh-350px)] rounded-md border p-4"></ScrollArea>
     </div>
   );
 };
