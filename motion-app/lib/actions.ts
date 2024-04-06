@@ -92,59 +92,68 @@ export async function addAccountInfo(access_token: string) {
   console.log(accounts);
 
   for (const account of accounts) {
-    let variableAccountId;
-    try {
-      console.log(name);
-      if (name == "Chase") {
-        console.log("User attempted add Chase account");
-        const existingBankAccount = await db.bankAccount.findUnique({
-          where: { persistentID: account.persistent_account_id },
-        });
-        const existingTransactions = await db.transactions.findMany({
-          where: { accountId: account.account_id },
-        });
-        //Checking to see if there is already a chase account in the db, if so updates the account id as well as any existing transactions
-        if (existingBankAccount) {
-          console.log("Duplicate account found, updating account id");
-          existingBankAccount.accountId = account.account_id;
-          if (existingTransactions.length > 0) {
-            console.log("Updating existing transactions account id");
-            for (const transaction of existingTransactions) {
-              transaction.accountId = account.account_id;
-            }
+    console.log(name);
+    if (name == "Chase") {
+      console.log("User attempted add Chase account");
+      const existingBankAccount = await db.bankAccount.findUnique({
+        where: { persistentID: account.persistent_account_id },
+      });
+      const existingTransactions = await db.transactions.findMany({
+        where: { accountId: account.account_id },
+      });
+      //Checking to see if there is already a chase account in the db, if so updates the account id as well as any existing transactions
+      if (existingBankAccount) {
+        console.log("Duplicate account found, updating account id");
+        existingBankAccount.accountId = account.account_id;
+        if (existingTransactions.length > 0) {
+          console.log("Updating existing transactions account id");
+          for (const transaction of existingTransactions) {
+            transaction.accountId = account.account_id;
           }
-          console.log(
-            "Updated existing bank account id's and related transactions!"
-          );
-          updateTransactions([access_token]);
-        } else {
-          await db.bankAccount.create({
-            data: {
-              accountId: account.account_id,
-              persistentID: account.persistent_account_id,
-              balance: account.balances.current,
-              icon: logo,
-              accountType: account.subtype,
-              bankName: name,
-              accessToken: access_token,
-            },
-          });
-          console.log("Bank account created successfully!");
-          updateTransactions([access_token]);
         }
-      }
-
-      // If creation is successful, proceed with your logic
-    } catch (error: any) {
-      // Check if the error is due to a unique constraint violation
-      if (error.code === "P2002") {
-        // Handle the unique constraint conflict here
-        console.log("Bank account creation failed due to duplicate entry.");
+        console.log(
+          "Updated existing bank account id's and related transactions!"
+        );
+        updateTransactions([access_token]);
       } else {
-        // Handle other errors
-        console.error("Error creating bank account:", error);
+        await db.bankAccount.create({
+          data: {
+            accountId: account.account_id,
+            persistentID: account.persistent_account_id,
+            balance: account.balances.current,
+            icon: logo,
+            accountType: account.subtype,
+            bankName: name,
+            accessToken: access_token,
+          },
+        });
+        console.log("Bank account created successfully!");
+        updateTransactions([access_token]);
+      }
+    } else {
+      console.log("User attempting add nonChase account");
+      const existingBankAccount = await db.bankAccount.findUnique({
+        where: { accountId: account.account_id },
+      });
+      if (!existingBankAccount) {
+        await db.bankAccount.create({
+          data: {
+            accountId: account.account_id,
+            balance: account.balances.current,
+            icon: logo,
+            accountType: account.subtype,
+            bankName: name,
+            accessToken: access_token,
+          },
+        });
+        console.log("Bank account created successfully!");
+        updateTransactions([access_token]);
+      } else {
+        console.log("Attempting to add duplicate account");
       }
     }
+
+    // If creation is successful, proceed with your logic
   }
 }
 
