@@ -6,9 +6,9 @@ import {
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Home, SquareUserRound, Landmark } from "lucide-react";
-import SideNavBar from "./components/sideNavBar";
+import SideNavBar from "./sidebar/sideNavBar";
 
-const HomePage = async () => {
+const OverviewPage = async () => {
   return (
     <div className="flex p-10">
       <SideNavBar></SideNavBar>
@@ -16,4 +16,4 @@ const HomePage = async () => {
   );
 };
 
-export default HomePage;
+export default OverviewPage;
