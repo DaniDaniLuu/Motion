@@ -20,7 +20,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import AccountTab from "./accountTab";
 
-import RefreshButton from "../../components/refreshBankAccounts";
+import RefreshButton from "../components/refreshBankAccounts";
 
 interface AccountInfo {
   bankName: string;
