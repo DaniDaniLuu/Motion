@@ -22,6 +22,8 @@ import AccountTab from "./accountTab";
 
 import RefreshButton from "../components/refreshBankAccounts";
 
+import { useContext } from "react";
+
 interface AccountInfo {
   bankName: string;
   bankImage: string;
@@ -38,7 +40,11 @@ interface BankAccountInfo {
   icon: string | null;
 }
 
-const SideNavBar = () => {
+interface SideNavBarProps {
+  setPage: (pageId: number) => void;
+}
+
+const SideNavBar = ({ setPage }: SideNavBarProps) => {
   const [selected, setSelected] = useState<number>(1);
   const [token, setToken] = useState(null);
   const [currentBankAccounts, setCurrentBankAccounts] = useState<
@@ -135,6 +141,7 @@ const SideNavBar = () => {
                       variant="ghost"
                       onClick={() => {
                         setSelected(button.id);
+                        setPage(button.id);
                       }}
                     >
                       {button.icon}
