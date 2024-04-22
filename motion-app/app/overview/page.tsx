@@ -13,12 +13,12 @@ const PageList = [
     component: Dashboard,
   },
   {
-    id: 2,
+    id: 3,
     title: "Transaction",
     component: Transaction,
   },
   {
-    id: 3,
+    id: 2,
     title: "Account",
     component: Account,
   },
