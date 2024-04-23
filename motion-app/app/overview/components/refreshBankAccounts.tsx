@@ -26,6 +26,11 @@ const RefreshButton = ({ disabled }: { disabled: boolean }) => {
               description: response,
               className: "bg-primary font-bold",
             });
+          } else if (response == "No new transactions found!") {
+            toast({
+              description: response,
+              className: "bg-accent font-bold",
+            });
           } else {
             toast({
               description: response,

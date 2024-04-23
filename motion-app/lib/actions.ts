@@ -162,7 +162,6 @@ export async function updateTransactions(access_token_array: Array<string>) {
   const { existingUser } = await response.json();
   if (access_token_array.length == 0) {
     console.log("No access tokens provided");
-    access_token_array = [];
     if (existingUser) {
       //Finding plaid items with matching emails
       const plaidItemArr = await db.plaidItem.findMany({
@@ -172,6 +171,8 @@ export async function updateTransactions(access_token_array: Array<string>) {
         for (const plaidItem of plaidItemArr) {
           access_token_array.push(plaidItem.accessToken);
         }
+      } else {
+        return "No bank accounts added yet.";
       }
     }
   }
@@ -196,11 +197,7 @@ export async function updateTransactions(access_token_array: Array<string>) {
         cursor = mostRecentTransaction.cursor;
       }
 
-      let added;
-      let modified;
-      let removed;
-      let accounts;
-      let next_cursor;
+      let added, modified, removed, accounts, next_cursor;
       if (cursor) {
         let hasMore = true;
         const request: TransactionsSyncRequest = {
