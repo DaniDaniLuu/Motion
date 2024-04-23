@@ -21,10 +21,7 @@ const RefreshButton = ({ disabled }: { disabled: boolean }) => {
         onClick={async () => {
           toggleSpin();
           const response = await updateTransactions([]);
-          if (
-            response == "Added new transactions!" ||
-            "No new transactions found!"
-          ) {
+          if (response == "Added new transactions!") {
             toast({
               description: response,
               className: "bg-primary font-bold",
