@@ -10,7 +10,7 @@ export async function middleware(req: NextRequest) {
 
   if (
     !session &&
-    (pathname === "/overview" ||
+    (pathname === "/app" ||
       pathname === "/profile" ||
       pathname === "/settings")
   ) {
@@ -21,7 +21,7 @@ export async function middleware(req: NextRequest) {
     session &&
     (pathname === "/auth/login" || pathname === "/auth/register")
   ) {
-    return NextResponse.redirect(new URL("/overview", req.url));
+    return NextResponse.redirect(new URL("/app", req.url));
   }
 
   return NextResponse.next();
