@@ -17,19 +17,11 @@ import {
   updateTransactions,
   fetchStoredBankInfo,
 } from "@/lib/actions";
-import { useToast } from "@/components/ui/use-toast";
 import AccountTab from "./accountTab";
 
-import RefreshButton from "../components/refreshBankAccounts";
+import RefreshButton from "../refresh/refreshBankAccounts";
+import { useRouter } from "next/navigation";
 
-import { useContext } from "react";
-
-interface AccountInfo {
-  bankName: string;
-  bankImage: string;
-  miscInfo: string;
-  balance: number;
-}
 interface BankAccountInfo {
   accountId: string;
   balance: number;
@@ -40,11 +32,8 @@ interface BankAccountInfo {
   icon: string | null;
 }
 
-interface SideNavBarProps {
-  setPage: (pageId: number) => void;
-}
-
-const SideNavBar = ({ setPage }: SideNavBarProps) => {
+const SideNavBar = () => {
+  const router = useRouter();
   const [selected, setSelected] = useState<number>(1);
   const [token, setToken] = useState(null);
   const [currentBankAccounts, setCurrentBankAccounts] = useState<
@@ -141,7 +130,14 @@ const SideNavBar = ({ setPage }: SideNavBarProps) => {
                       variant="ghost"
                       onClick={() => {
                         setSelected(button.id);
-                        setPage(button.id);
+                        if (button.id == 1) {
+                          router.push("/app/dashboard");
+                        } else if (button.id == 2) {
+                          router.push("/app/account");
+                        } else {
+                          router.push("/app/transaction");
+                        }
+                        router.refresh();
                       }}
                     >
                       {button.icon}
