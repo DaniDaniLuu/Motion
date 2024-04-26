@@ -110,7 +110,7 @@ const SideNavBar = () => {
   ];
 
   return (
-    <div className="flex flex-col max-w-72">
+    <div className="flex flex-col">
       <div className="border-b border-primary-foreground pb-4">
         <TooltipProvider>
           {buttonList.map(
