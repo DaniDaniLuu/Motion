@@ -20,7 +20,7 @@ import {
 import AccountTab from "./accountTab";
 
 import RefreshButton from "../refresh/refreshBankAccounts";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 interface BankAccountInfo {
   accountId: string;
@@ -34,11 +34,11 @@ interface BankAccountInfo {
 
 const SideNavBar = () => {
   const router = useRouter();
-  const [selected, setSelected] = useState<number>(1);
   const [token, setToken] = useState(null);
   const [currentBankAccounts, setCurrentBankAccounts] = useState<
     BankAccountInfo[]
   >([]);
+  const pathname = usePathname();
   let bankAccountInfo: Array<BankAccountInfo> = [];
 
   useEffect(() => {
@@ -125,11 +125,10 @@ const SideNavBar = () => {
                   <TooltipTrigger asChild className="gap-2 min-w-72">
                     <Button
                       className={`flex justify-start ${
-                        button.id === selected ? "bg-secondary" : ""
+                        pathname.includes(button.title.toLowerCase()) ? "bg-secondary" : ""
                       }`}
                       variant="ghost"
                       onClick={() => {
-                        setSelected(button.id);
                         if (button.id == 1) {
                           router.push("/app/dashboard");
                         } else if (button.id == 2) {
