@@ -87,6 +87,7 @@ model BankAccount {
   icon        String?
   accountType String
   bankName    String
+  transactions Transactions[]
 
   accessToken  String
   plaidAccount PlaidItem @relation(fields: [accessToken], references: [accessToken], onDelete: Cascade)
@@ -94,12 +95,13 @@ model BankAccount {
 
 model Transactions {
   transactionId String   @unique
+  accountId   String
   amount        Int
   category      String[]
-  merchantName  String
+  merchantName  String?
+  merchantLogo String?
   date          String
-
-  accountId   String
-
   cursor String
+
+  plaidAccount BankAccount @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
 }

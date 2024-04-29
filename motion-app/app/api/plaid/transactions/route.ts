@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  let cursor = "";
+  let cursor = body.cursor;
 
   // New transaction updates since "cursor"
   let added: Array<Transaction> = [];
@@ -36,5 +36,6 @@ export async function POST(req: NextRequest) {
     added: added,
     modified: modified,
     removed: removed,
+    returnCursor: cursor,
   });
 }

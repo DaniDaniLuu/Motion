@@ -2,8 +2,6 @@
 import { db } from "./db";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import { TransactionsSyncRequest } from "plaid";
-import { plaidClient } from "./plaid";
 
 export async function addToDB(data: any) {
   const session = await getServerSession();
@@ -71,25 +69,6 @@ export async function addAccountInfo(access_token: string) {
   const {
     institution: { name, logo },
   } = institutionObject;
-
-  const transactionResponse = await fetch(
-    "http://localhost:3000/api/plaid/transactions",
-    {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify({ access_token: access_token }),
-    }
-  );
-
-  const transactionObject = await transactionResponse.json();
-  console.log(transactionObject);
-  const { added, modified, removed } = transactionObject;
-
-  // accounts [] , name , logo , added, modified, removed
-
-  console.log(accounts);
 
   for (const account of accounts) {
     console.log(name);
@@ -161,7 +140,6 @@ export async function updateTransactions(access_token_array: Array<string>) {
   const response = await getUser();
   const { existingUser } = await response.json();
   if (access_token_array.length == 0) {
-    console.log("No access tokens provided");
     if (existingUser) {
       //Finding plaid items with matching emails
       const plaidItemArr = await db.plaidItem.findMany({
@@ -178,102 +156,74 @@ export async function updateTransactions(access_token_array: Array<string>) {
   }
   console.log("Access tokens provided for sync: ", access_token_array);
 
+  let hasAdded = false;
+
   // Finding all bank accounts with matching access tokens
   for (const access_token of access_token_array) {
     const bankAccountArr = await db.bankAccount.findMany({
       where: { accessToken: access_token },
     });
-    if (bankAccountArr.length == 0) {
-      return "No bank accounts added yet.";
-    }
     for (const bankAccount of bankAccountArr) {
+      console.log("runs");
+      let cursor = null;
+
       const transactions = await db.transactions.findMany({
         where: { accountId: bankAccount.accountId },
       });
+
       // There are existing transactions in the db that share the account id
-      const mostRecentTransaction = transactions[transactions.length - 1];
-      let cursor = null;
-      if (mostRecentTransaction) {
+      if (transactions.length != 0) {
+        const mostRecentTransaction = transactions[transactions.length - 1];
         cursor = mostRecentTransaction.cursor;
       }
 
-      let added, modified, removed, accounts, next_cursor;
-      if (cursor) {
-        let hasMore = true;
-        const request: TransactionsSyncRequest = {
-          access_token: bankAccount.accessToken,
-          cursor: cursor,
-        };
-        const response = await plaidClient.transactionsSync(request);
-        const data = response.data;
+      const transactionResponse = await fetch(
+        "http://localhost:3000/api/plaid/transactions",
+        {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify({ access_token: access_token, cursor: cursor }),
+        }
+      );
 
-        if (data.accounts) {
-          accounts = data.accounts;
-        }
-        if (data.added) {
-          added = data.added;
-        }
-        if (data.modified) {
-          modified = data.modified;
-        }
-        if (data.removed) {
-          removed = data.removed;
-        }
-        if (data.next_cursor) {
-          next_cursor = data.next_cursor;
-        }
-      } else {
-        const request: TransactionsSyncRequest = {
-          access_token: bankAccount.accessToken,
-        };
-        const response = await plaidClient.transactionsSync(request);
-        const data = response.data;
+      const transactionObject = await transactionResponse.json();
+      const { added, modified, removed, returnCursor } = transactionObject;
 
-        if (data.accounts) {
-          accounts = data.accounts;
-        }
-        if (data.added) {
-          added = data.added;
-        }
-        if (data.modified) {
-          modified = data.modified;
-        }
-        if (data.removed) {
-          removed = data.removed;
-        }
-        if (data.next_cursor) {
-          next_cursor = data.next_cursor;
-        }
-      }
-      const accountRelevantAccessToken = bankAccount.accessToken;
-      console.log(accountRelevantAccessToken);
-      console.log(access_token);
-      console.log(bankAccount.accountId);
-      if (added && added.length > 0 && next_cursor) {
-        added = added.filter((transaction) => {
+      if (added && added.length > 0 && returnCursor) {
+        let addedTrans = added.filter((transaction: any) => {
           return transaction.account_id === bankAccount.accountId;
         });
-        for (const transaction of added) {
-          if (transaction.merchant_name) {
-            console.log(transaction.transaction_id);
-            await db.transactions.create({
-              data: {
-                transactionId: transaction.transaction_id,
-                amount: transaction.amount,
-                date: transaction.date,
-                cursor: next_cursor,
-                accountId: transaction.account_id,
-                merchantName: transaction.merchant_name,
-              },
-            });
-          }
-        }
 
-        return "Added new transactions!";
-      } else {
-        return "No new transactions found!";
+        console.log(addedTrans);
+        for (const transaction of addedTrans) {
+          hasAdded = true;
+          console.log(`\nTransaction ID: ${transaction.transaction_id}\n`);
+          await db.transactions.create({
+            data: {
+              transactionId: transaction.transaction_id,
+              accountId: transaction.account_id,
+              amount: transaction.amount,
+              category: transaction.category,
+              merchantName: transaction.merchant_name
+                ? transaction.merchant_name
+                : "None",
+              merchantLogo: transaction.logo_url
+                ? transaction.logo_url
+                : "None",
+              date: transaction.date,
+              cursor: returnCursor,
+            },
+          });
+        }
       }
     }
+  }
+  if (hasAdded) {
+    return "Added new transactions!";
+  } else {
+    return "No new transactions found!";
   }
 }
 
@@ -288,22 +238,6 @@ export async function getUser() {
     return NextResponse.json({ error: "No user found" });
   }
 }
-
-/*
-
-
-
-
-for EACH plaidItem -> for EACH bankAccount -> 
-{
-    icon:
-    bankName:
-    balance:
-    accountType:
-}
-
-return this object in an array
-*/
 
 export async function getInfoAccountTab() {
   interface accountInfo {
