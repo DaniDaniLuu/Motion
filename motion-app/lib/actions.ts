@@ -282,3 +282,17 @@ export async function fetchStoredBankInfo() {
     return bankAccount.flat();
   }
 }
+
+export async function fetchStoredTransactions() {
+  const bankAccountArr = await fetchStoredBankInfo();
+  if (bankAccountArr) {
+    let transactions = [];
+    for (const bankAccount of bankAccountArr) {
+      const transactionArr = await db.transactions.findMany({
+        where: { accountId: bankAccount.accountId },
+      });
+      transactions.push(transactionArr);
+    }
+    return transactions.flat();
+  }
+}
