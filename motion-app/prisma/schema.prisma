@@ -86,6 +86,7 @@ model BankAccount {
   balance     Int
   icon        String?
   accountType String
+  accountCategory String
   bankName    String
   transactions Transactions[]
 
