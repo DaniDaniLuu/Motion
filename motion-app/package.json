@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^1.5.1",
+    "@floating-ui/react": "^0.26.13",
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-brands-svg-icons": "^6.5.1",
     "@fortawesome/free-regular-svg-icons": "^6.5.1",
@@ -32,6 +33,7 @@
     "@tanstack/react-table": "^8.16.0",
     "@types/plaid-link": "^2.0.15",
     "bcrypt": "^5.1.1",
+    "chart.js": "^4.4.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "cmdk": "^1.0.0",
@@ -43,6 +45,7 @@
     "next-themes": "^0.3.0",
     "plaid": "^22.0.1",
     "react": "^18",
+    "react-chartjs-2": "^5.2.0",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18",
     "react-hook-form": "^7.51.0",
