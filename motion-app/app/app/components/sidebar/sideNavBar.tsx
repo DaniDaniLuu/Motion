@@ -125,7 +125,9 @@ const SideNavBar = () => {
                   <TooltipTrigger asChild className="gap-2 min-w-72">
                     <Button
                       className={`flex justify-start ${
-                        pathname.includes(button.title.toLowerCase()) ? "bg-secondary" : ""
+                        pathname.includes(button.title.toLowerCase())
+                          ? "bg-secondary"
+                          : ""
                       }`}
                       variant="ghost"
                       onClick={() => {
