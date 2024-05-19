@@ -10,7 +10,7 @@ interface GoogleSignInButtonProps {
 
 const GoogleSignInButton: FC<GoogleSignInButtonProps> = ({ children }) => {
   const loginGoogle = () => {
-    signIn("google", { callbackUrl: "http://localhost:3000/app" });
+    signIn("google", { callbackUrl: "http://localhost:3000/app/dashboard" });
   };
 
   return (
