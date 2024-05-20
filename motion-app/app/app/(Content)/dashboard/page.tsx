@@ -32,6 +32,12 @@ interface TransactionInfo {
   cursor: string;
 }
 
+type ChartData = {
+  totalSpentAmount: number;
+  totalRecievedAmount: number;
+  monthYear: string;
+};
+
 interface aggTransactionInfo {
   totalSpentAmount: number;
   monthYear: string;
@@ -51,7 +57,7 @@ function getFiveMostRecentTransactions(transactions: any[]) {
   return fiveMostRecentTransactions;
 }
 
-function aggregateTransactionsByMonth(transactions: any[]) {
+function aggregateTransactionsByMonth(transactions: any[]): ChartData[] {
   const sortedTransactions = transactions.sort((a, b) => {
     const dateA = new Date(a.date);
     const dateB = new Date(b.date);
@@ -196,7 +202,10 @@ const Dashboard = () => {
               totalLiability={totalLiability}
               totalLiabilityAccountCount={totalLiabilityAccountCount}
             />
-            <TotalInvested></TotalInvested>
+            <TotalInvested
+              totalInvested={0}
+              totalInvestmentAccountCount={0}
+            ></TotalInvested>
           </div>
           <SpendingChart
             chartData={aggregateTransactionsByMonth(transactions)}

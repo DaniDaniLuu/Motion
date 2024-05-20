@@ -14,8 +14,8 @@ interface TotalInvestedProps {
 }
 
 const TotalInvested = ({
-  totalInvested = 0,
-  totalInvestmentAccountCount = 0,
+  totalInvested,
+  totalInvestmentAccountCount,
 }: TotalInvestedProps) => {
   const [animatedTotal, setAnimatedTotal] = useState(totalInvested);
 
