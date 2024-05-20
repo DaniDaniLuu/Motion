@@ -1,14 +1,7 @@
 import { Line } from "react-chartjs-2";
 import { Chart } from "chart.js/auto";
 import { Filter } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { useClick, useFloating, useInteractions } from "@floating-ui/react";
 import { useState } from "react";
 
@@ -16,11 +9,15 @@ type ChartData = {
   totalSpentAmount: number;
   totalRecievedAmount: number;
   monthYear: string;
-}
+};
+
+type SpendingChartProps = {
+  chartData: ChartData[];
+};
 
 Chart.register();
 
-const SpendingChart = ({ chartData }: { chartData: ChartData[] }) => {
+const SpendingChart = ({ chartData }: SpendingChartProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const { refs, floatingStyles, context } = useFloating({

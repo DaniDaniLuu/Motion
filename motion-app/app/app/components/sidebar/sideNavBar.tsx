@@ -21,6 +21,7 @@ import AccountTab from "./accountTab";
 
 import RefreshButton from "../refresh/refreshBankAccounts";
 import { usePathname, useRouter } from "next/navigation";
+import { useRefreshContext } from "@/components/context/RefreshContextProvider";
 
 interface BankAccountInfo {
   accountId: string;
@@ -39,7 +40,7 @@ const SideNavBar = () => {
     BankAccountInfo[]
   >([]);
   const pathname = usePathname();
-  let bankAccountInfo: Array<BankAccountInfo> = [];
+  const {isRefreshing, setIsRefreshing} = useRefreshContext()
 
   useEffect(() => {
     const createLinkToken = async () => {
@@ -79,6 +80,7 @@ const SideNavBar = () => {
     await addAccountInfo(access_token);
     const fetchedBankInfo = await fetchStoredBankInfo();
     if (fetchedBankInfo) {
+      setIsRefreshing(true)
       setCurrentBankAccounts([...fetchedBankInfo]);
     }
   }, []);

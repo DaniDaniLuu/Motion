@@ -4,12 +4,11 @@ import TotalCash from "./components/totalCash";
 import TotalLiability from "./components/totalLiability";
 import SpendingChart from "./components/spendingChart";
 import TotalInvested from "./components/totalInvested";
-
 import { useState, useEffect } from "react";
-
 import { fetchStoredBankInfo, fetchStoredTransactions } from "@/lib/actions";
 import { FormType, columns } from "./components/columns";
 import { DataTable } from "./components/data-table";
+import { useRefreshContext } from "@/components/context/RefreshContextProvider";
 
 interface BankAccountInfo {
   accountId: string;
@@ -91,6 +90,7 @@ function aggregateTransactionsByMonth(transactions: any[]): ChartData[] {
 }
 
 const Dashboard = () => {
+  const { isRefreshing, setIsRefreshing } = useRefreshContext();
   const [bankAccounts, setCurrentBankAccounts] = useState<BankAccountInfo[]>(
     []
   );
@@ -109,65 +109,70 @@ const Dashboard = () => {
     useState(0);
   const [totalInvestmentAccountCount, setTotalInvestmentAccountCount] =
     useState(0);
+  const [spendingChartData, setSpendingChartData] = useState<ChartData[]>([])
+
+  const fetchBankInfo = async () => {
+    const bankInfo = await fetchStoredBankInfo();
+    if (bankInfo) {
+      setCurrentBankAccounts(bankInfo);
+
+      // Sorting the accounts
+      const filteredCashAccounts = bankInfo.filter((account) =>
+        cashAccountStrings.includes(account.accountCategory)
+      );
+      const filteredLiabilityAccounts = bankInfo.filter((account) =>
+        creditAccountStrings.includes(account.accountCategory)
+      );
+      const filteredInvestmentAccounts = bankInfo.filter((account) =>
+        investmentAccountStrings.includes(account.accountCategory)
+      );
+
+      // Setting number of each accounts present
+      setTotalAccountCount(bankInfo.length);
+      setTotalCashAccountCount(filteredCashAccounts.length);
+      setTotalLiabilityAccountCount(filteredLiabilityAccounts.length);
+      setTotalInvestmentAccountCount(filteredInvestmentAccounts.length);
+
+      // Setting values from feteched accounts
+      setTotalLiquidity(
+        bankInfo.reduce((acc, account) => acc + account.balance, 0)
+      );
+      setTotalCash(
+        filteredCashAccounts.reduce((acc, account) => acc + account.balance, 0)
+      );
+      setTotalLiability(
+        filteredLiabilityAccounts.reduce(
+          (acc, account) => acc + account.balance,
+          0
+        )
+      );
+      setTotalInvested(
+        filteredInvestmentAccounts.reduce(
+          (acc, account) => acc + account.balance,
+          0
+        )
+      );
+    }
+
+    // Now fetching transactions
+    const fetchedTransactions = await fetchStoredTransactions();
+    if (fetchedTransactions) {
+      let chartData = aggregateTransactionsByMonth(fetchedTransactions)
+      setSpendingChartData([...chartData]);
+      setFiveMostRecentTransactions(
+        getFiveMostRecentTransactions(fetchedTransactions)
+      );
+    }
+  };
 
   useEffect(() => {
-    const fetchBankInfo = async () => {
-      const bankInfo = await fetchStoredBankInfo();
-      if (bankInfo) {
-        setCurrentBankAccounts(bankInfo);
-
-        // Sorting the accounts
-        const filteredCashAccounts = bankInfo.filter((account) =>
-          cashAccountStrings.includes(account.accountCategory)
-        );
-        const filteredLiabilityAccounts = bankInfo.filter((account) =>
-          creditAccountStrings.includes(account.accountCategory)
-        );
-        const filteredInvestmentAccounts = bankInfo.filter((account) =>
-          investmentAccountStrings.includes(account.accountCategory)
-        );
-
-        // Setting number of each accounts present
-        setTotalAccountCount(bankInfo.length);
-        setTotalCashAccountCount(filteredCashAccounts.length);
-        setTotalLiabilityAccountCount(filteredLiabilityAccounts.length);
-        setTotalInvestmentAccountCount(filteredInvestmentAccounts.length);
-
-        // Setting values from feteched accounts
-        setTotalLiquidity(
-          bankInfo.reduce((acc, account) => acc + account.balance, 0)
-        );
-        setTotalCash(
-          filteredCashAccounts.reduce(
-            (acc, account) => acc + account.balance,
-            0
-          )
-        );
-        setTotalLiability(
-          filteredLiabilityAccounts.reduce(
-            (acc, account) => acc + account.balance,
-            0
-          )
-        );
-        setTotalInvested(
-          filteredInvestmentAccounts.reduce(
-            (acc, account) => acc + account.balance,
-            0
-          )
-        );
-      }
-
-      // Now fetching transactions
-      const fetchedTransactions = await fetchStoredTransactions();
-      if (fetchedTransactions) {
-        setTransactions(fetchedTransactions);
-        setFiveMostRecentTransactions(
-          getFiveMostRecentTransactions(fetchedTransactions)
-        );
-      }
-    };
     fetchBankInfo();
   }, []);
+
+  useEffect(() => {
+    fetchBankInfo();
+    setIsRefreshing(false);
+  }, [isRefreshing]);
 
   const data = [
     {
@@ -208,11 +213,11 @@ const Dashboard = () => {
             ></TotalInvested>
           </div>
           <SpendingChart
-            chartData={aggregateTransactionsByMonth(transactions)}
+            chartData={spendingChartData}
           />
         </div>
         <div>
-          <DataTable columns={columns} data={fiveMostRecentTransactions} />
+          <DataTable columns={columns} data={fiveMostRecentTransactions as any} />
         </div>
       </div>
     </div>

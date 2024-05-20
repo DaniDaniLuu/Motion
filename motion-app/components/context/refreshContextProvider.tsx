@@ -5,13 +5,20 @@ type refreshContextProviderProps = {
   children: React.ReactNode;
 };
 
-const refreshContext = createContext<boolean | null>(null);
+type refreshContext = {
+  isRefreshing: boolean;
+  setIsRefreshing: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
-const refreshContextProvider = ({ children }: refreshContextProviderProps) => {
+const refreshContext = createContext<refreshContext | null>(null);
+
+export const RefreshContextProvider = ({
+  children,
+}: refreshContextProviderProps) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   return (
-    <refreshContext.Provider value={isRefreshing}>
+    <refreshContext.Provider value={{ isRefreshing, setIsRefreshing }}>
       {children}
     </refreshContext.Provider>
   );
@@ -28,5 +35,3 @@ export const useRefreshContext = () => {
 
   return isRefreshing;
 };
-
-export default refreshContext;
