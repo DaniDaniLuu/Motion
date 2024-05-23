@@ -1,6 +1,7 @@
 "use server";
 import { db } from "./db";
 import { getServerSession } from "next-auth";
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
 export async function addToDB(data: any) {
@@ -17,6 +18,7 @@ export async function addToDB(data: any) {
   const { image, plaidAccessToken } = data;
 
   if (plaidAccessToken) {
+    console.log(`plaidAccessToken is ${plaidAccessToken}`)
     await db.plaidItem.create({
       data: {
         accessToken: plaidAccessToken,
@@ -133,8 +135,6 @@ export async function addAccountInfo(access_token: string) {
         console.log("Attempting to add duplicate account");
       }
     }
-
-    // If creation is successful, proceed with your logic
   }
 }
 

@@ -6,8 +6,8 @@ type refreshContextProviderProps = {
 };
 
 type refreshContext = {
-  isRefreshing: boolean;
-  setIsRefreshing: React.Dispatch<React.SetStateAction<boolean>>;
+  triggerRefresh: number;
+  setTriggerRefresh: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const refreshContext = createContext<refreshContext | null>(null);
@@ -15,23 +15,23 @@ const refreshContext = createContext<refreshContext | null>(null);
 export const RefreshContextProvider = ({
   children,
 }: refreshContextProviderProps) => {
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [triggerRefresh, setTriggerRefresh] = useState(0);
 
   return (
-    <refreshContext.Provider value={{ isRefreshing, setIsRefreshing }}>
+    <refreshContext.Provider value={{ triggerRefresh, setTriggerRefresh }}>
       {children}
     </refreshContext.Provider>
   );
 };
 
 export const useRefreshContext = () => {
-  const isRefreshing = useContext(refreshContext);
+  const triggerRefresh = useContext(refreshContext);
 
-  if (!isRefreshing) {
+  if (!triggerRefresh) {
     throw new Error(
       "Cannot use refreshContext outside of refreshContextProvider"
     );
   }
 
-  return isRefreshing;
+  return triggerRefresh;
 };

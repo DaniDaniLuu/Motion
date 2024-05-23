@@ -90,7 +90,7 @@ function aggregateTransactionsByMonth(transactions: any[]): ChartData[] {
 }
 
 const Dashboard = () => {
-  const { isRefreshing, setIsRefreshing } = useRefreshContext();
+  const { triggerRefresh, setTriggerRefresh } = useRefreshContext();
   const [bankAccounts, setCurrentBankAccounts] = useState<BankAccountInfo[]>(
     []
   );
@@ -171,8 +171,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchBankInfo();
-    setIsRefreshing(false);
-  }, [isRefreshing]);
+  }, [triggerRefresh]);
 
   const data = [
     {

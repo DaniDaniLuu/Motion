@@ -3,27 +3,26 @@ import { z } from "zod";
 import { ColumnDef } from "@tanstack/react-table";
 
 const formSchema = z.object({
-  id: z.string(),
+  date: z.string(),
+  description: z.number(),
+  type: z.string(),
   amount: z.number(),
-  status: z.union([
-    z.literal("pending"),
-    z.literal("processing"),
-    z.literal("success"),
-    z.literal("failed"),
-  ]),
-  email: z.string().email(),
 });
 
 export type FormType = z.infer<typeof formSchema>;
 
 export const columns: ColumnDef<FormType>[] = [
   {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: "date",
+    header: "Date",
   },
   {
-    accessorKey: "email",
-    header: "Email",
+    accessorKey: "description",
+    header: "Description",
+  },
+  {
+    accessorKey: "type",
+    header: "Type",
   },
   {
     accessorKey: "amount",
