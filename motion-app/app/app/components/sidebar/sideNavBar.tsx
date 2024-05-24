@@ -34,22 +34,22 @@ const SideNavBar = () => {
   >([]);
   const { triggerRefresh, setTriggerRefresh } = useRefreshContext();
 
-  useEffect(() => {
-    const createLinkToken = async () => {
-      const response = await fetch("/api/plaid/create-link-token", {
-        method: "POST",
-        cache: "no-store",
-      });
-      const { link_token } = await response.json();
-      setToken(link_token);
-    };
-    const fetchedBankInfo = async () => {
-      const fetchedBankInfo = await fetchStoredBankInfo();
-      if (fetchedBankInfo) {
-        setCurrentBankAccounts([...fetchedBankInfo]);
-      }
-    };
+  const createLinkToken = async () => {
+    const response = await fetch("/api/plaid/create-link-token", {
+      method: "POST",
+      cache: "no-store",
+    });
+    const { link_token } = await response.json();
+    setToken(link_token);
+  };
+  const fetchedBankInfo = async () => {
+    const fetchedBankInfo = await fetchStoredBankInfo();
+    if (fetchedBankInfo) {
+      setCurrentBankAccounts([...fetchedBankInfo]);
+    }
+  };
 
+  useEffect(() => {
     createLinkToken();
     fetchedBankInfo();
   }, []);
@@ -79,6 +79,7 @@ const SideNavBar = () => {
     if (fetchedBankInfo) {
       setTriggerRefresh(triggerRefresh + 1);
       setCurrentBankAccounts([...fetchedBankInfo]);
+      createLinkToken();
     }
   }, []);
 
