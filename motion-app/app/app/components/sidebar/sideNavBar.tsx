@@ -14,25 +14,23 @@ import {
 import AccountTab from "./accountTab";
 
 import RefreshButton from "../refresh/refreshBankAccounts";
-import { useRefreshContext } from "@/components/context/RefreshContextProvider";
+import { useBankAccountContext } from "@/components/context/BankAccountContextProvider";
 import ButtonList from "./ButtonList";
 
 interface BankAccountInfo {
   accountId: string;
   balance: number;
+  icon: string | null;
   accountType: string;
+  accountCategory: string;
   bankName: string;
   persistentAccountId?: string;
   accessToken: string;
-  icon: string | null;
 }
 
 const SideNavBar = () => {
   const [token, setToken] = useState(null);
-  const [currentBankAccounts, setCurrentBankAccounts] = useState<
-    BankAccountInfo[]
-  >([]);
-  const { triggerRefresh, setTriggerRefresh } = useRefreshContext();
+  const { bankAccounts, setBankAccounts } = useBankAccountContext();
 
   const createLinkToken = async () => {
     const response = await fetch("/api/plaid/create-link-token", {
@@ -42,24 +40,20 @@ const SideNavBar = () => {
     const { link_token } = await response.json();
     setToken(link_token);
   };
-  const fetchedBankInfo = async () => {
-    const fetchedBankInfo = await fetchStoredBankInfo();
-    if (fetchedBankInfo) {
-      setCurrentBankAccounts([...fetchedBankInfo]);
-    }
-  };
 
   useEffect(() => {
+    const fetchedBankInfo = async () => {
+      const fetchedBankInfo = await fetchStoredBankInfo();
+      if (fetchedBankInfo) {
+        setBankAccounts([...fetchedBankInfo]);
+      }
+    };
+
     createLinkToken();
     fetchedBankInfo();
   }, []);
 
-  // useEffect(() => {
-  //   setCurrentBankAccounts(currentBankAccounts);
-  // }, [currentBankAccounts]);
-
   const onSuccess = useCallback(async (publicToken: string) => {
-    console.log("onSuccess Runs!");
     const response = await fetch("/api/plaid/exchange-public-token", {
       method: "POST",
       headers: {
@@ -77,8 +71,7 @@ const SideNavBar = () => {
     await addAccountInfo(access_token);
     const fetchedBankInfo = await fetchStoredBankInfo();
     if (fetchedBankInfo) {
-      setTriggerRefresh(triggerRefresh + 1);
-      setCurrentBankAccounts([...fetchedBankInfo]);
+      setBankAccounts([...fetchedBankInfo]);
       createLinkToken();
     }
   }, []);
@@ -108,10 +101,10 @@ const SideNavBar = () => {
 
       <ScrollArea className=" max-h-[calc(100vh-350px)] rounded-md border p-4">
         <div className="flex flex-col gap-4">
-          {currentBankAccounts.map((account: BankAccountInfo) => {
+          {bankAccounts.map((account: BankAccountInfo) => {
             return (
               <AccountTab
-                key={account.bankName}
+                key={account.accountId}
                 bankName={account.bankName}
                 bankImage={account.icon ? account.icon : ""}
                 miscInfo={account.accountType}

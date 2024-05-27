@@ -4,21 +4,11 @@ import TotalCash from "./components/totalCash";
 import TotalLiability from "./components/totalLiability";
 import SpendingChart from "./components/spendingChart";
 import TotalInvested from "./components/totalInvested";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { fetchStoredBankInfo, fetchStoredTransactions } from "@/lib/actions";
 import { FormType, columns } from "./components/columns";
 import { DataTable } from "./components/data-table";
-import { useRefreshContext } from "@/components/context/RefreshContextProvider";
-
-interface BankAccountInfo {
-  accountId: string;
-  balance: number;
-  accountType: string;
-  bankName: string;
-  persistentAccountId?: string;
-  accessToken: string;
-  icon: string | null;
-}
+import { useBankAccountContext } from "@/components/context/BankAccountContextProvider";
 
 interface TransactionInfo {
   transactionId: string;
@@ -90,10 +80,7 @@ function aggregateTransactionsByMonth(transactions: any[]): ChartData[] {
 }
 
 const Dashboard = () => {
-  const { triggerRefresh, setTriggerRefresh } = useRefreshContext();
-  const [bankAccounts, setCurrentBankAccounts] = useState<BankAccountInfo[]>(
-    []
-  );
+  const { bankAccounts, setBankAccounts } = useBankAccountContext();
   const [transactions, setTransactions] = useState<TransactionInfo[]>([]);
   const [fiveMostRecentTransactions, setFiveMostRecentTransactions] = useState<
     TransactionInfo[]
@@ -109,13 +96,13 @@ const Dashboard = () => {
     useState(0);
   const [totalInvestmentAccountCount, setTotalInvestmentAccountCount] =
     useState(0);
-  const [spendingChartData, setSpendingChartData] = useState<ChartData[]>([])
+  const [spendingChartData, setSpendingChartData] = useState<ChartData[]>([]);
 
   const fetchBankInfo = async () => {
-    const bankInfo = await fetchStoredBankInfo();
+    const bankInfo = bankAccounts;
+    console.log(`Bank Info`);
+    console.log(bankInfo);
     if (bankInfo) {
-      setCurrentBankAccounts(bankInfo);
-
       // Sorting the accounts
       const filteredCashAccounts = bankInfo.filter((account) =>
         cashAccountStrings.includes(account.accountCategory)
@@ -155,10 +142,13 @@ const Dashboard = () => {
     }
 
     // Now fetching transactions
-    const fetchedTransactions = await fetchStoredTransactions();
+    const fetchedTransactions = await fetchStoredTransactions(bankInfo);
+    console.log(`Fetched Transactions:`);
+    console.log(fetchedTransactions);
     if (fetchedTransactions) {
-      let chartData = aggregateTransactionsByMonth(fetchedTransactions)
-      setSpendingChartData([...chartData]);
+      setSpendingChartData([
+        ...aggregateTransactionsByMonth(fetchedTransactions),
+      ]);
       setFiveMostRecentTransactions(
         getFiveMostRecentTransactions(fetchedTransactions)
       );
@@ -166,27 +156,15 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
+    console.log(spendingChartData);
     fetchBankInfo();
   }, []);
 
   useEffect(() => {
+    console.log(`Refresh Data:`);
+    console.log(bankAccounts);
     fetchBankInfo();
-  }, [triggerRefresh]);
-
-  const data = [
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-    {
-      id: "489e1d42",
-      amount: 125,
-      status: "processing",
-      email: "example@gmail.com",
-    },
-  ];
+  }, [bankAccounts]);
 
   return (
     <div>
@@ -211,12 +189,14 @@ const Dashboard = () => {
               totalInvestmentAccountCount={0}
             ></TotalInvested>
           </div>
-          <SpendingChart
-            chartData={spendingChartData}
-          />
+
+          <SpendingChart chartData={spendingChartData} />
         </div>
         <div>
-          <DataTable columns={columns} data={fiveMostRecentTransactions as any} />
+          <DataTable
+            columns={columns}
+            data={fiveMostRecentTransactions as any}
+          />
         </div>
       </div>
     </div>

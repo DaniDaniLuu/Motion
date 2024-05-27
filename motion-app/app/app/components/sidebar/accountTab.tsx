@@ -1,5 +1,4 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { string } from "zod";
 
 interface AccountInfo {
   bankName: string;
@@ -15,7 +14,6 @@ const AccountTab: React.FC<AccountInfo> = ({
   balance,
 }) => {
   let customImageSource = "/bank-icons/" + bankName + ".png";
-  console.log(customImageSource);
 
   return (
     <div className="flex justify-between items-center border-b border-primary-foreground py-3">

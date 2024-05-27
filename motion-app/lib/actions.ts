@@ -4,6 +4,17 @@ import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
+interface BankAccountInfo {
+  accountId: string;
+  balance: number;
+  icon: string | null;
+  accountType: string;
+  accountCategory: string;
+  bankName: string;
+  persistentAccountId?: string;
+  accessToken: string;
+}
+
 export async function addToDB(data: any) {
   const session = await getServerSession();
   const sessionEmail = session?.user.email;
@@ -18,7 +29,6 @@ export async function addToDB(data: any) {
   const { image, plaidAccessToken } = data;
 
   if (plaidAccessToken) {
-    console.log(`plaidAccessToken is ${plaidAccessToken}`)
     await db.plaidItem.create({
       data: {
         accessToken: plaidAccessToken,
@@ -36,9 +46,6 @@ export async function addToDB(data: any) {
 }
 
 export async function addAccountInfo(access_token: string) {
-  const response = await getUser();
-  const { existingUser } = await response.json();
-
   const balanceResponse = await fetch(
     "http://localhost:3000/api/plaid/balance",
     {
@@ -73,9 +80,7 @@ export async function addAccountInfo(access_token: string) {
   } = institutionObject;
 
   for (const account of accounts) {
-    console.log(name);
     if (name == "Chase") {
-      console.log("User attempted add Chase account");
       const existingBankAccount = await db.bankAccount.findUnique({
         where: { persistentID: account.persistent_account_id },
       });
@@ -84,18 +89,14 @@ export async function addAccountInfo(access_token: string) {
       });
       //Checking to see if there is already a chase account in the db, if so updates the account id as well as any existing transactions
       if (existingBankAccount) {
-        console.log("Duplicate account found, updating account id");
         existingBankAccount.accountId = account.account_id;
         if (existingTransactions.length > 0) {
-          console.log("Updating existing transactions account id");
           for (const transaction of existingTransactions) {
             transaction.accountId = account.account_id;
           }
         }
-        console.log(
-          "Updated existing bank account id's and related transactions!"
-        );
-        updateTransactions([access_token]);
+
+        await updateTransactions([access_token]);
       } else {
         await db.bankAccount.create({
           data: {
@@ -109,11 +110,10 @@ export async function addAccountInfo(access_token: string) {
             accessToken: access_token,
           },
         });
-        console.log("Bank account created successfully!");
-        updateTransactions([access_token]);
+
+        await updateTransactions([access_token]);
       }
     } else {
-      console.log("User attempting add nonChase account");
       const existingBankAccount = await db.bankAccount.findUnique({
         where: { accountId: account.account_id },
       });
@@ -129,10 +129,8 @@ export async function addAccountInfo(access_token: string) {
             accessToken: access_token,
           },
         });
-        console.log("Bank account created successfully!");
-        updateTransactions([access_token]);
-      } else {
-        console.log("Attempting to add duplicate account");
+
+        await updateTransactions([access_token]);
       }
     }
   }
@@ -156,7 +154,6 @@ export async function updateTransactions(access_token_array: Array<string>) {
       }
     }
   }
-  console.log("Access tokens provided for sync: ", access_token_array);
 
   let hasAdded = false;
 
@@ -166,7 +163,6 @@ export async function updateTransactions(access_token_array: Array<string>) {
       where: { accessToken: access_token },
     });
     for (const bankAccount of bankAccountArr) {
-      console.log("runs");
       let cursor = null;
 
       const transactions = await db.transactions.findMany({
@@ -198,10 +194,9 @@ export async function updateTransactions(access_token_array: Array<string>) {
           return transaction.account_id === bankAccount.accountId;
         });
 
-        console.log(addedTrans);
         for (const transaction of addedTrans) {
           hasAdded = true;
-          console.log(`\nTransaction ID: ${transaction.transaction_id}\n`);
+
           await db.transactions.create({
             data: {
               transactionId: transaction.transaction_id,
@@ -261,7 +256,6 @@ export async function getInfoAccountTab() {
       const bankAccountArr = await db.bankAccount.findMany({
         where: { accessToken: plaidItem.accessToken },
       });
-      console.log(bankAccountArr);
     }
   }
 }
@@ -274,19 +268,24 @@ export async function fetchStoredBankInfo() {
     const plaidItemArr = await db.plaidItem.findMany({
       where: { userEmail: existingUser.email },
     });
-    let bankAccount = [];
+    let bankAccounts = [];
     for (const plaidItem of plaidItemArr) {
       const bankAccountArr = await db.bankAccount.findMany({
         where: { accessToken: plaidItem.accessToken },
       });
-      bankAccount.push(bankAccountArr);
+      for (const account of bankAccountArr) {
+        bankAccounts.push(account);
+      }
     }
-    return bankAccount.flat();
+    return bankAccounts;
   }
 }
 
-export async function fetchStoredTransactions() {
-  const bankAccountArr = await fetchStoredBankInfo();
+export async function fetchStoredTransactions(
+  bankAccountArr: BankAccountInfo[]
+) {
+  console.log("Transaction Bank Accounts: ");
+  console.log(bankAccountArr);
   if (bankAccountArr) {
     let transactions = [];
     for (const bankAccount of bankAccountArr) {
@@ -295,6 +294,8 @@ export async function fetchStoredTransactions() {
       });
       transactions.push(transactionArr);
     }
+    console.log("Returned Transactions: ");
+    console.log(transactions);
     return transactions.flat();
   }
 }

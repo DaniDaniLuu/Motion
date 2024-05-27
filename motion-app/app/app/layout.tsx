@@ -1,6 +1,7 @@
 import React, { FC } from "react";
 import SideNavBar from "./components/sidebar/sideNavBar";
-import { RefreshContextProvider } from "@/components/context/RefreshContextProvider";
+import { BankAccountContextProvider } from "@/components/context/BankAccountContextProvider";
+
 
 type AppLayoutProps = {
   children: React.ReactNode;
@@ -9,10 +10,10 @@ type AppLayoutProps = {
 const AppLayout = ({ children }: AppLayoutProps) => {
   return (
     <div className="flex py-5 px-2">
-      <RefreshContextProvider>
+      <BankAccountContextProvider>
         <SideNavBar />
         <div className="px-5">{children}</div>
-      </RefreshContextProvider>
+      </BankAccountContextProvider>
     </div>
   );
 };

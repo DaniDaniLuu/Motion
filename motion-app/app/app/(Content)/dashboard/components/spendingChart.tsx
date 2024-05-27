@@ -1,9 +1,11 @@
+"use client"
 import { Line } from "react-chartjs-2";
 import { Chart } from "chart.js/auto";
 import { Filter } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useClick, useFloating, useInteractions } from "@floating-ui/react";
 import { useState } from "react";
+
 
 type ChartData = {
   totalSpentAmount: number;

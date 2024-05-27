@@ -81,28 +81,28 @@ model PlaidItem {
 }
 
 model BankAccount {
-  accountId   String         @unique
-  persistentID String? @unique
-  balance     Int
-  icon        String?
-  accountType String
+  accountId       String         @unique
+  persistentID    String?        @unique
+  balance         Int
+  icon            String?
+  accountType     String
   accountCategory String
-  bankName    String
-  transactions Transactions[]
+  bankName        String
+  transactions    Transactions[]
 
   accessToken  String
   plaidAccount PlaidItem @relation(fields: [accessToken], references: [accessToken], onDelete: Cascade)
 }
 
 model Transactions {
-  transactionId String   @unique
-  accountId   String
+  transactionId String @unique
+  accountId     String
   amount        Int
   category      String[]
   merchantName  String?
-  merchantLogo String?
+  merchantLogo  String?
   date          String
-  cursor String
+  cursor        String
 
   plaidAccount BankAccount @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
 }
