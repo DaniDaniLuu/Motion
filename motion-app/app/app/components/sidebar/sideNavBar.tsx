@@ -99,7 +99,7 @@ const SideNavBar = () => {
         <RefreshButton disabled={!ready}></RefreshButton>
       </div>
 
-      <ScrollArea className=" max-h-[calc(100vh-350px)] rounded-md border p-4">
+      <ScrollArea className="max-h-[calc(100vh-350px)] rounded-md border p-4">
         <div className="flex flex-col gap-4">
           {bankAccounts.map((account: BankAccountInfo) => {
             return (

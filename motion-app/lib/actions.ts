@@ -299,3 +299,18 @@ export async function fetchStoredTransactions(
     return transactions.flat();
   }
 }
+
+export async function getBankIcon(accountID: string): Promise<string> {
+  const bankAccount = await db.bankAccount.findFirst({
+    where: { accountId: accountID },
+  });
+  let bankName = "";
+  if (bankAccount) {
+    bankName = bankAccount.bankName;
+  }
+
+  let customImageSource = "/bank-icons/" + bankName + ".png";
+  return customImageSource;
+}
+
+
