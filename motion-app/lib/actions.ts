@@ -1,7 +1,6 @@
 "use server";
 import { db } from "./db";
 import { getServerSession } from "next-auth";
-import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
 interface BankAccountInfo {
