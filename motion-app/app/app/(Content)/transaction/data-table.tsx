@@ -5,7 +5,6 @@ import {
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
-  SortingState,
   getSortedRowModel,
   ColumnFiltersState,
   getFilteredRowModel,
@@ -21,8 +20,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
-import { Download } from "lucide-react";
+import { useState } from "react";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -32,6 +30,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { isWithinRange } from "./FilterFunctions";
+import ExportButton from "./components/exportButton";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -49,13 +49,13 @@ export function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    onColumnFiltersChange: setColumnFilters,
     state: {
-      columnFilters,
+      columnFilters: columnFilters,
     },
     initialState: {
       sorting: [
@@ -65,18 +65,10 @@ export function DataTable<TData, TValue>({
         },
       ],
     },
+    filterFns: {
+      isWithinRange: isWithinRange,
+    },
   });
-
-  useEffect(() => {
-    if (startDate != undefined && endDate != undefined) {
-      console.log("Start Date is: ");
-      const formattedDate = `${startDate.getFullYear()}-${String(
-        startDate.getMonth() + 1
-      ).padStart(2, "0")}-${String(startDate.getDate()).padStart(2, "0")}`;
-      console.log(formattedDate);
-      table.getColumn("date")?.setFilterValue(formattedDate);
-    }
-  }, [startDate, endDate]);
 
   return (
     <div>
@@ -145,9 +137,9 @@ export function DataTable<TData, TValue>({
               value={
                 (table.getColumn("type")?.getFilterValue() as string) ?? ""
               }
-              onChange={(event) =>
-                table.getColumn("type")?.setFilterValue(event.target.value)
-              }
+              onChange={(event) => {
+                table.getColumn("type")?.setFilterValue(event.target.value);
+              }}
               className="w-[150px] h-7"
             />
           </div>
@@ -168,14 +160,18 @@ export function DataTable<TData, TValue>({
           </div>
         </div>
         <div className="flex flex-col justify-end">
-          <Button size="default" className="h-7">
+          <Button
+            size="default"
+            className="h-7"
+            onClick={() => {
+              table.getColumn("date")?.setFilterValue([startDate, endDate]);
+            }}
+          >
             Apply
           </Button>
         </div>
         <div className="flex flex-col justify-end">
-          <Button size="sm" variant="ghost" className="gap-2">
-            <Download></Download>Export
-          </Button>
+          <ExportButton table={table}></ExportButton>
         </div>
       </div>
       <div className="rounded-md border">

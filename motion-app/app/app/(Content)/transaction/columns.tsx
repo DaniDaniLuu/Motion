@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { isWithinRange } from "./FilterFunctions";
 
 const formSchema = z.object({
   bank: z.string(),
@@ -78,6 +79,7 @@ export const columns: ColumnDef<FormType>[] = [
         </Button>
       );
     },
+    filterFn: isWithinRange,
   },
   {
     accessorKey: "description",
