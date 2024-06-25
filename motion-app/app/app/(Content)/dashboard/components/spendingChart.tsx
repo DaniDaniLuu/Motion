@@ -1,90 +1,59 @@
-"use client"
-import { Line } from "react-chartjs-2";
-import { Chart } from "chart.js/auto";
-import { Filter } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { useClick, useFloating, useInteractions } from "@floating-ui/react";
-import { useState } from "react";
-
-
-type ChartData = {
-  totalSpentAmount: number;
-  totalRecievedAmount: number;
-  monthYear: string;
-};
+import { chartData } from "@/lib/types";
+import {
+  ResponsiveContainer,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Area,
+  AreaChart,
+} from "recharts";
 
 type SpendingChartProps = {
-  chartData: ChartData[];
+  chartData: chartData[] 
 };
 
-Chart.register();
-
 const SpendingChart = ({ chartData }: SpendingChartProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const { refs, floatingStyles, context } = useFloating({
-    placement: "right",
-    open: isOpen,
-    onOpenChange: setIsOpen,
-  });
-
-  const click = useClick(context);
-
-  const { getReferenceProps, getFloatingProps } = useInteractions([click]);
-
-  if (chartData.length === 0) {
-    return <div>No data available</div>;
-  }
-
-  const chartDataWithDatasets = {
-    labels: chartData.map((item) => item.monthYear),
-    datasets: [
-      {
-        label: "Total Spent",
-        data: chartData.map((item) => item.totalSpentAmount),
-        backgroundColor: "rgba(255, 99, 132, 0.8)",
-        borderColor: "rgba(255, 99, 132, 0.8)",
-        fill: true,
-      },
-      {
-        label: "Total Earned",
-        data: chartData.map((item) => item.totalRecievedAmount),
-        fill: true,
-        backgroundColor: "rgba(75, 220, 71, 0.8)",
-        borderColor: "rgba(75, 220, 71, 0.8)",
-      },
-    ],
-  };
+  console.log("Chart gets rendered");
 
   return (
-    <Card>
-      <div className="flex justify-between items-center">
-        <div className="ml-auto"></div>
-        <h1 className="text-center text-lg ">Total Spent vs Total Earned</h1>
-        <div
-          className="ml-auto "
-          ref={refs.setReference}
-          {...getReferenceProps()}
-        >
-          <Filter className="h-6 w-6 cursor-pointer" />
-        </div>
-      </div>
-
-      <Line data={chartDataWithDatasets} />
-
-      {isOpen && (
-        <div
-          ref={refs.setFloating}
-          style={floatingStyles}
-          {...getFloatingProps()}
-        >
-          <div className="flex flex-col gap-3 text-center">
-            <div className="font-bold">Blacklist Transactions</div>
-            <div>Implement Later</div>
-          </div>
-        </div>
-      )}
-    </Card>
+    <ResponsiveContainer width="80%" height={300}>
+      <AreaChart
+        width={500}
+        height={400}
+        data={chartData}
+        margin={{
+          top: 10,
+          right: 30,
+          left: 0,
+          bottom: 0,
+        }}
+      >
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis
+          dataKey="daySince"
+          type="number"
+          domain={["dataMin", "dataMax"]}
+          tickCount={9}
+        />
+        <YAxis />
+        <Tooltip />
+        <Area
+          dot={{ stroke: "red", strokeWidth: 2 }}
+          type="monotone"
+          dataKey="prevMonth"
+          stroke="#8884d8"
+          fill="#8884d8"
+        />
+        <Area
+          dot={{ stroke: "red", strokeWidth: 2 }}
+          type="monotone"
+          dataKey="currMonth"
+          stroke="#82ca9d"
+          fill="#82ca9d"
+        />
+      </AreaChart>
+    </ResponsiveContainer>
   );
 };
 

@@ -4,21 +4,10 @@ import { DataTable } from "./data-table";
 import { useBankAccountContext } from "@/components/context/BankAccountContextProvider";
 import { useEffect, useState } from "react";
 import { fetchStoredTransactions, getBankIcon } from "@/lib/actions";
-import { db } from "@/lib/db";
-
-interface BankAccountInfo {
-  accountId: string;
-  balance: number;
-  icon: string | null;
-  accountType: string;
-  accountCategory: string;
-  bankName: string;
-  persistentAccountId?: string;
-  accessToken: string;
-}
+import { BankAccountInfo } from "@/lib/types";
 
 const Transaction = () => {
-  const { bankAccounts, setBankAccounts } = useBankAccountContext();
+  const { bankAccounts } = useBankAccountContext();
   const [data, setData] = useState<FormType[]>([]);
 
   async function getData(bankAccounts: BankAccountInfo[]) {
@@ -51,10 +40,14 @@ const Transaction = () => {
   }, [bankAccounts]);
 
   return (
-    <div className="flex flex-col font-bold text-xl">
-      Transaction History
-      <DataTable columns={columns} data={data} />
-    </div>
+    <>
+      <div className="font-bold text-2xl text-primary py-3 px-5 bg-background">
+        Transaction History
+      </div>
+      <div className="gap-4 p-5 pt-2">
+        <DataTable columns={columns} data={data} />
+      </div>
+    </>
   );
 };
 

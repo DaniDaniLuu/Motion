@@ -9,7 +9,6 @@ import {
   ColumnFiltersState,
   getFilteredRowModel,
 } from "@tanstack/react-table";
-
 import {
   Table,
   TableBody,
@@ -72,7 +71,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="py-5 flex gap-1 font-medium text-sm">
+      <div className="py-5 flex gap-5 font-medium text-sm">
         <div className="flex flex-col">
           <p>From</p>
           <Popover>
@@ -174,7 +173,7 @@ export function DataTable<TData, TValue>({
           <ExportButton table={table}></ExportButton>
         </div>
       </div>
-      <div className="rounded-md border">
+      <div className="rounded-md border-2">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

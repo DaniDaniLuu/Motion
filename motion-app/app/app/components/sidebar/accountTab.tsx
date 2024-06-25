@@ -16,7 +16,7 @@ const AccountTab: React.FC<AccountInfo> = ({
   let customImageSource = "/bank-icons/" + bankName + ".png";
 
   return (
-    <div className="flex justify-between items-center border-b border-primary-foreground py-3">
+    <div className="flex justify-between items-center border-b border-primary-foreground py-3 text-secondary">
       <div className="flex items-center gap-4">
         <Avatar className="h-8 w-8">
           <AvatarImage src={customImageSource} alt="accountImage" />
@@ -27,10 +27,7 @@ const AccountTab: React.FC<AccountInfo> = ({
           <p className="text-xs m-0">{miscInfo}</p>
         </div>
       </div>
-
-      <div className="">
-        <p className="text-sm font-bold">${balance}</p>
-      </div>
+      <p className="text-sm font-bold">${balance}</p>
     </div>
   );
 };

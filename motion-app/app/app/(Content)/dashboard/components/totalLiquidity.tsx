@@ -1,4 +1,12 @@
 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import React, { useState, useEffect } from "react";
 
 interface TotalLiquidityProps {
@@ -32,12 +40,12 @@ const TotalLiquidity = ({
   }, [totalLiquidity, animatedTotalLiquidity]);
 
   return (
-    <div className="pb-6">
-      <h1 className="text-5xl">Available Balance</h1>
-      <p className="text-4xl pt-2">
-        ${animatedTotalLiquidity.toLocaleString()}
-      </p>
-    </div>
+    <Card className="w-full">
+      <CardHeader>
+        <CardDescription>Net Worth</CardDescription>
+        <CardTitle className="text-primary text-3xl">${animatedTotalLiquidity.toLocaleString()}</CardTitle>
+      </CardHeader>
+    </Card>
   );
 };
 

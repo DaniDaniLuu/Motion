@@ -2,33 +2,21 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { CirclePlus } from "lucide-react";
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, memo } from "react";
 import { usePlaidLink } from "react-plaid-link";
 import {
   addAccountInfo,
   addToDB,
-  getInfoAccountTab,
-  updateTransactions,
   fetchStoredBankInfo,
 } from "@/lib/actions";
 import AccountTab from "./accountTab";
-
 import RefreshButton from "../refresh/refreshBankAccounts";
 import { useBankAccountContext } from "@/components/context/BankAccountContextProvider";
 import ButtonList from "./ButtonList";
-
-interface BankAccountInfo {
-  accountId: string;
-  balance: number;
-  icon: string | null;
-  accountType: string;
-  accountCategory: string;
-  bankName: string;
-  persistentAccountId?: string;
-  accessToken: string;
-}
+import { BankAccountInfo } from "@/lib/types";
 
 const SideNavBar = () => {
+  console.log("SideNavBar gets rendered");
   const [token, setToken] = useState(null);
   const { bankAccounts, setBankAccounts } = useBankAccountContext();
 
@@ -37,8 +25,14 @@ const SideNavBar = () => {
       method: "POST",
       cache: "no-store",
     });
-    const { link_token } = await response.json();
-    setToken(link_token);
+
+    if (response.ok) {
+      const { link_token } = await response.json();
+      setToken(link_token);
+    } else {
+      const errorResponse = await response.json();
+      console.log("Link token creation error:", errorResponse);
+    }
   };
 
   useEffect(() => {
@@ -82,14 +76,18 @@ const SideNavBar = () => {
   });
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col pl-4 pr-2 bg-primary">
+      <div className="text-secondary text-center text-2xl font-extrabold pt-2 pb-1">
+        Motion
+      </div>
       <ButtonList></ButtonList>
-      <div className="flex flex-col py-1">
+
+      <div className="flex flex-col py-2">
         <div>
           <Button
             onClick={() => open()}
             variant="ghost"
-            className="flex items-center gap-3 "
+            className="flex items-center gap-3 text-secondary"
             disabled={!ready}
           >
             <CirclePlus />
@@ -99,8 +97,8 @@ const SideNavBar = () => {
         <RefreshButton disabled={!ready}></RefreshButton>
       </div>
 
-      <ScrollArea className="max-h-[calc(100vh-350px)] rounded-md border p-4">
-        <div className="flex flex-col gap-4">
+      <ScrollArea className="max-h-[calc(50vh)] rounded-md border p-4 bg-primary">
+        <div className="flex flex-col gap-4 bg-primary">
           {bankAccounts.map((account: BankAccountInfo) => {
             return (
               <AccountTab

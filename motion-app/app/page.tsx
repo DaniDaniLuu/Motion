@@ -12,6 +12,7 @@ import User from "@/components/User";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+import NavBar from "@/components/NavBar/NavBar";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
@@ -21,6 +22,7 @@ export default async function Home() {
   }
   return (
     <div>
+      <NavBar />
       <PageHeader>
         <PageHeaderHeading>Motion</PageHeaderHeading>
         <PageHeaderDescriptionSmall>

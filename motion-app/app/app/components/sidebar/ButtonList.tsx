@@ -6,8 +6,8 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { Home, SquareUserRound, Landmark } from "lucide-react";
-import { ReactNode } from "react";
+import { Home, Layers, CreditCard, CandlestickChart } from "lucide-react";
+import { ReactNode, memo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 
@@ -23,20 +23,26 @@ const ButtonList = () => {
     },
     {
       id: 2,
-      title: "Account",
-      icon: <SquareUserRound />,
-      content: "Account Overview",
+      title: "Accounts",
+      icon: <Layers />,
+      content: "Accounts Overview",
     },
     {
       id: 3,
       title: "Transaction",
-      icon: <Landmark />,
+      icon: <CreditCard />,
       content: "Transaction List",
+    },
+    {
+      id: 4,
+      title: "Investments",
+      icon: <CandlestickChart />,
+      content: "Investments",
     },
   ];
 
   return (
-    <div className="border-b border-primary-foreground pb-4">
+    <div className="border-b border-primary-foreground">
       <TooltipProvider>
         {buttonList.map(
           (button: {
@@ -49,9 +55,9 @@ const ButtonList = () => {
               <Tooltip key={button.id}>
                 <TooltipTrigger asChild className="gap-2 min-w-72">
                   <Button
-                    className={`flex justify-start ${
+                    className={`flex justify-start my-2 text-secondary ${
                       pathname.includes(button.title.toLowerCase())
-                        ? "bg-secondary"
+                        ? "bg-secondary text-primary"
                         : ""
                     }`}
                     variant="ghost"
@@ -60,8 +66,10 @@ const ButtonList = () => {
                         router.push("/app/dashboard");
                       } else if (button.id == 2) {
                         router.push("/app/account");
-                      } else {
+                      } else if (button.id == 3) {
                         router.push("/app/transaction");
+                      } else {
+                        router.push("/app/investments");
                       }
                       router.refresh();
                     }}
@@ -82,4 +90,4 @@ const ButtonList = () => {
   );
 };
 
-export default ButtonList;
+export default memo(ButtonList);

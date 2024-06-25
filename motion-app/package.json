@@ -52,6 +52,7 @@
     "react-hook-form": "^7.51.0",
     "react-plaid-link": "^3.5.1",
     "react-wrap-balancer": "^1.1.0",
+    "recharts": "^2.13.0-alpha.4",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
     "teller-connect-react": "^0.1.0",

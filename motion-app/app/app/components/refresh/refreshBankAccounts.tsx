@@ -16,7 +16,7 @@ const RefreshButton = ({ disabled }: { disabled: boolean }) => {
     <div>
       <Button
         variant={"ghost"}
-        className="flex items-center gap-3"
+        className="flex items-center gap-3 text-secondary"
         disabled={isSpinning || disabled}
         onClick={async () => {
           toggleSpin();

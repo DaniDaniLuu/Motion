@@ -20,8 +20,9 @@ export async function POST(req) {
 
   try {
     const tokenResponse = await plaidClient.linkTokenCreate(request);
-    return NextResponse.json(tokenResponse.data);
+    return NextResponse.json(tokenResponse.data, { status: 200 });
   } catch (error) {
     console.log(error);
+    return NextResponse.json({ error: error }, { status: 500 });
   }
 }
