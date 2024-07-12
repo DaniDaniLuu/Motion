@@ -71,7 +71,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="py-5 flex gap-5 font-medium text-sm">
+      <div className="py-5 flex gap-5 font-medium text-sm items-center">
         <div className="flex flex-col">
           <p>From</p>
           <Popover>
@@ -158,7 +158,7 @@ export function DataTable<TData, TValue>({
             />
           </div>
         </div>
-        <div className="flex flex-col justify-end">
+        <div className="flex gap-5 pt-4">
           <Button
             size="default"
             className="h-7"
@@ -168,9 +168,25 @@ export function DataTable<TData, TValue>({
           >
             Apply
           </Button>
-        </div>
-        <div className="flex flex-col justify-end">
           <ExportButton table={table}></ExportButton>
+        </div>
+        <div className="flex items-center">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
         </div>
       </div>
       <div className="rounded-md border-2">
@@ -224,7 +240,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
+      {/* <div className="flex items-center justify-end space-x-2 py-4">
         <Button
           variant="outline"
           size="sm"
@@ -241,7 +257,7 @@ export function DataTable<TData, TValue>({
         >
           Next
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 }

@@ -44,7 +44,7 @@ const Transaction = () => {
       <div className="font-bold text-2xl text-primary py-3 px-5 bg-background">
         Transaction History
       </div>
-      <div className="gap-4 p-5 pt-2">
+      <div className="p-5 pt-2">
         <DataTable columns={columns} data={data} />
       </div>
     </>
