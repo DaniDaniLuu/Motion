@@ -101,6 +101,7 @@ model Transactions {
   category      String[]
   merchantName  String?
   merchantLogo  String?
+  bankLogo      String?
   date          String
   cursor        String
 

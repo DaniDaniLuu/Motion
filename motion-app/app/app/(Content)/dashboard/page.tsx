@@ -6,6 +6,7 @@ import { useBankAccountContext } from "@/components/context/BankAccountContextPr
 import RecentTransactions from "./components/RecentTransactions";
 import Spending from "./components/Spending";
 import { TransactionInfo } from "@/lib/types";
+import NetWorth from "./components/NetWorth";
 
 const Dashboard = () => {
   const { bankAccounts } = useBankAccountContext();
@@ -41,12 +42,13 @@ const Dashboard = () => {
       <div className="font-bold text-2xl text-primary py-3 px-5 bg-background">
         Overview
       </div>
-      <div className="flex flex-col gap-4 p-5">
+      <div className="grid grid-cols-2 gap-5 p-5">
         <TotalLiquidity
           totalLiquidity={totalLiquidity}
           totalAccountCount={totalAccountCount}
         />
         <Spending transactionInfo={transactionInfo}></Spending>
+        <NetWorth></NetWorth>
         <RecentTransactions
           transactionInfo={transactionInfo}
         ></RecentTransactions>

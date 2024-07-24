@@ -86,7 +86,7 @@ export const columns: ColumnDef<FormType>[] = [
   },
   {
     accessorKey: "type",
-    header: "Type",
+    header: "Merchant",
   },
   {
     accessorKey: "amount",

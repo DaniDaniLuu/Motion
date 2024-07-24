@@ -14,9 +14,9 @@ import RefreshButton from "../refresh/refreshBankAccounts";
 import { useBankAccountContext } from "@/components/context/BankAccountContextProvider";
 import ButtonList from "./ButtonList";
 import { BankAccountInfo } from "@/lib/types";
+import ProfileNav from "@/components/NavBar/profileNav";
 
 const SideNavBar = () => {
-  console.log("SideNavBar gets rendered");
   const [token, setToken] = useState(null);
   const { bankAccounts, setBankAccounts } = useBankAccountContext();
 
@@ -112,6 +112,7 @@ const SideNavBar = () => {
           })}
         </div>
       </ScrollArea>
+      <ProfileNav></ProfileNav>
     </div>
   );
 };

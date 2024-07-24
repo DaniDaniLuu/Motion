@@ -14,10 +14,9 @@ type SpendingChartProps = {
 };
 
 const SpendingChart = ({ chartData }: SpendingChartProps) => {
-  console.log("Chart gets rendered");
 
   return (
-    <ResponsiveContainer width="80%" height={300}>
+    <ResponsiveContainer width="100%" height={300}>
       <AreaChart
         width={500}
         height={400}
@@ -38,19 +37,12 @@ const SpendingChart = ({ chartData }: SpendingChartProps) => {
         />
         <YAxis />
         <Tooltip />
+        <Area type="monotone" dataKey="prevMonth" stroke="" fill="" />
         <Area
-          dot={{ stroke: "red", strokeWidth: 2 }}
-          type="monotone"
-          dataKey="prevMonth"
-          stroke="#8884d8"
-          fill="#8884d8"
-        />
-        <Area
-          dot={{ stroke: "red", strokeWidth: 2 }}
           type="monotone"
           dataKey="currMonth"
-          stroke="#82ca9d"
-          fill="#82ca9d"
+          stroke="lightgreen"
+          fill="lightgreen"
         />
       </AreaChart>
     </ResponsiveContainer>

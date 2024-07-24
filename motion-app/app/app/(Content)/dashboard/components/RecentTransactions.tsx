@@ -8,8 +8,7 @@ import {
 } from "@/components/ui/card";
 import { DataTable } from "./data-table";
 import { FormType, columns } from "./columns";
-import { TransactionInfo } from "../page";
-import { useEffect, useState } from "react";
+import { TransactionInfo } from "@/lib/types";
 
 type RecentTransactionsProps = {
   transactionInfo: TransactionInfo[];

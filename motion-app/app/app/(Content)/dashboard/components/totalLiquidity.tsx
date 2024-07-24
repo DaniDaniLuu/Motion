@@ -45,6 +45,9 @@ const TotalLiquidity = ({
         <CardDescription>Net Worth</CardDescription>
         <CardTitle className="text-primary text-3xl">${animatedTotalLiquidity.toLocaleString()}</CardTitle>
       </CardHeader>
+      <CardContent>
+
+      </CardContent>
     </Card>
   );
 };
